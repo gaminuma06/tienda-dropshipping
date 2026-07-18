@@ -474,7 +474,7 @@
               <th>Dirección</th>
               <th>Productos</th>
               <th>Total</th>
-              <th>Guía Dropi</th>
+              <th>Guía / Plataforma</th>
               <th>Estado API</th>
               <th>Estado Envío</th>
               <th>Acciones</th>
@@ -507,7 +507,7 @@
               <th>Foto</th>
               <th>Producto</th>
               <th>SKU</th>
-              <th>Dropi ID</th>
+              <th>Plataforma / ID</th>
               <th>Precio</th>
               <th>Slug</th>
               <th>Landing Page</th>
@@ -563,7 +563,15 @@
             <input type="text" id="prod-slug" class="form-control" required placeholder="Ej. tenis-deportivos-pro">
           </div>
           <div class="col form-group">
-            <label for="prod-dropi-id">ID de Producto en Dropi (Para automatización)</label>
+            <label for="prod-proveedor">Plataforma Logística *</label>
+            <select id="prod-proveedor" class="form-control" required>
+              <option value="Dropi">Dropi</option>
+              <option value="Effi">Effi (EffiSystems)</option>
+              <option value="Hoko">Hoko</option>
+            </select>
+          </div>
+          <div class="col form-group">
+            <label for="prod-dropi-id">ID de Producto en Plataforma</label>
             <input type="text" id="prod-dropi-id" class="form-control" placeholder="Ej. 84725">
           </div>
         </div>

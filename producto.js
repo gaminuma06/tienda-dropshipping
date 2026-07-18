@@ -314,7 +314,8 @@ function configurarEnvioFormulario() {
       cantidad: ofertaSeleccionada.cantidad,
       precio: ofertaSeleccionada.precio / ofertaSeleccionada.cantidad,
       sku: productoActual.sku,
-      dropi_id: productoActual.dropi_id || '12345'
+      dropi_id: productoActual.dropi_id || '12345',
+      proveedor: productoActual.proveedor || 'Dropi'
     }];
 
     const payload = {

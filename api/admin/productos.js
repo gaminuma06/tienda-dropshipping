@@ -58,7 +58,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { id, nombre, descripcion, precio, precio_antiguo, sku, dropi_id, imagenes, opciones, slug, beneficios, testimonios, activo } = req.body;
+    const { id, nombre, descripcion, precio, precio_antiguo, sku, dropi_id, imagenes, opciones, slug, beneficios, testimonios, activo, proveedor } = req.body;
 
     // 2. Crear un producto (POST)
     if (req.method === 'POST') {
@@ -76,6 +76,7 @@ export default async function handler(req, res) {
             precio_antiguo: precio_antiguo ? parseFloat(precio_antiguo) : null,
             sku: sku.trim().toUpperCase(),
             dropi_id: dropi_id ? dropi_id.trim() : null,
+            proveedor: proveedor ? proveedor.trim() : 'Dropi',
             imagenes: Array.isArray(imagenes) ? imagenes : [imagenes],
             opciones: Array.isArray(opciones) ? opciones : [],
             slug: slug.trim().toLowerCase().replace(/[^a-z0-9-_]/g, ''), // URL friendly
@@ -108,6 +109,7 @@ export default async function handler(req, res) {
       if (precio_antiguo !== undefined) updateData.precio_antiguo = precio_antiguo ? parseFloat(precio_antiguo) : null;
       if (sku !== undefined) updateData.sku = sku.trim().toUpperCase();
       if (dropi_id !== undefined) updateData.dropi_id = dropi_id ? dropi_id.trim() : null;
+      if (proveedor !== undefined) updateData.proveedor = proveedor.trim();
       if (imagenes !== undefined) updateData.imagenes = Array.isArray(imagenes) ? imagenes : [imagenes];
       if (opciones !== undefined) updateData.opciones = Array.isArray(opciones) ? opciones : [];
       if (slug !== undefined) updateData.slug = slug.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');

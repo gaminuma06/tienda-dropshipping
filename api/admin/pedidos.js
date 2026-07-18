@@ -1,6 +1,8 @@
 import { supabase } from '../db.js';
 
-// Función para enviar el pedido a la API de Dropi (Misma que en create-order.js)
+// ---------------------------------------------------------
+// 1. INTEGRACIÓN CON DROPI
+// ---------------------------------------------------------
 async function sendOrderToDropi(orderData) {
   const dropiApiUrl = process.env.DROPI_API_URL || 'https://api.dropi.co';
   const dropiEmail = process.env.DROPI_EMAIL;
@@ -10,16 +12,10 @@ async function sendOrderToDropi(orderData) {
     throw new Error('Credenciales de Dropi no configuradas en las variables de entorno.');
   }
   
-  // 1. Login en Dropi para obtener Token JWT
   const loginResponse = await fetch(`${dropiApiUrl}/login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      email: dropiEmail.trim(),
-      password: dropiPassword.trim()
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: dropiEmail.trim(), password: dropiPassword.trim() })
   });
   
   if (!loginResponse.ok) {
@@ -30,11 +26,8 @@ async function sendOrderToDropi(orderData) {
   const loginResult = await loginResponse.json();
   const token = loginResult.token || (loginResult.data && loginResult.data.token) || loginResult.jwt;
   
-  if (!token) {
-    throw new Error('Token no encontrado en la respuesta del inicio de sesión de Dropi.');
-  }
+  if (!token) throw new Error('Token no encontrado en la respuesta de Dropi');
   
-  // 2. Mapear datos a la estructura que requiere la API de Dropi
   const nameParts = orderData.nombre.trim().split(' ');
   const firstName = nameParts[0];
   const lastName = nameParts.slice(1).join(' ') || '.';
@@ -57,7 +50,6 @@ async function sendOrderToDropi(orderData) {
     products: dropiProducts
   };
   
-  // 3. Registrar la orden en Dropi
   const orderResponse = await fetch(`${dropiApiUrl}/orders`, {
     method: 'POST',
     headers: {
@@ -73,17 +65,113 @@ async function sendOrderToDropi(orderData) {
   }
   
   const orderResult = await orderResponse.json();
-  
   const guideNumber = orderResult.shipping_guide_number || 
                       (orderResult.data && orderResult.data.numero_guia) || 
                       (orderResult.data && orderResult.data.id) ||
                       orderResult.id;
                       
-  return {
-    success: true,
-    guideNumber: String(guideNumber || ''),
-    data: orderResult
+  return { success: true, guideNumber: String(guideNumber || ''), data: orderResult };
+}
+
+// ---------------------------------------------------------
+// 2. INTEGRACIÓN CON EFFI
+// ---------------------------------------------------------
+async function sendOrderToEffi(orderData) {
+  const effiApiUrl = process.env.EFFI_API_URL || 'https://api.effisystems.com';
+  const effiApiKey = process.env.EFFI_API_KEY;
+  const effiToken = process.env.EFFI_TOKEN;
+  
+  if (!effiApiKey || !effiToken || effiApiKey.includes('tu-api-key')) {
+    throw new Error('Credenciales de Effi no configuradas en las variables de entorno.');
+  }
+  
+  const effiPayload = {
+    apiKey: effiApiKey,
+    token: effiToken,
+    pedido: {
+      nombre_cliente: orderData.nombre.trim(),
+      celular_cliente: orderData.celular.trim(),
+      direccion_entrega: orderData.direccion.trim(),
+      ciudad_destinatario: orderData.ciudad.toUpperCase(),
+      departamento_destinatario: orderData.departamento.toUpperCase(),
+      tipo_despacho: "CONTRAENTREGA",
+      productos: orderData.productos.map(p => ({
+        sku: p.sku || 'SKU-DEFECTO',
+        cantidad: p.cantidad || 1,
+        valor_venta: p.precio || 79900
+      }))
+    }
   };
+
+  const response = await fetch(`${effiApiUrl}/pedidos/crear`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${effiToken}`
+    },
+    body: JSON.stringify(effiPayload)
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`API de Effi respondió con error: ${errText}`);
+  }
+
+  const result = await response.json();
+  const guideNumber = result.guia || result.id_guia || (result.data && result.data.guia) || result.numero_pedido;
+  
+  return { success: true, guideNumber: String(guideNumber || ''), data: result };
+}
+
+// ---------------------------------------------------------
+// 3. INTEGRACIÓN CON HOKO
+// ---------------------------------------------------------
+async function sendOrderToHoko(orderData) {
+  const hokoApiUrl = process.env.HOKO_API_URL || 'https://api.hoko.com.co';
+  const hokoApiKey = process.env.HOKO_API_KEY;
+  
+  if (!hokoApiKey || hokoApiKey.includes('tu-api-key')) {
+    throw new Error('Credenciales de Hoko no configuradas en las variables de entorno.');
+  }
+  
+  const hokoPayload = {
+    cliente: {
+      nombre: orderData.nombre.trim(),
+      celular: orderData.celular.trim(),
+      direccion: orderData.direccion.trim(),
+      ciudad: orderData.ciudad.toUpperCase(),
+      departamento: orderData.departamento.toUpperCase(),
+      pais: "COLOMBIA"
+    },
+    orden: {
+      metodo_pago: "contraentrega",
+      detalles_envio: "Envio gratis",
+      productos: orderData.productos.map(p => ({
+        referencia_sku: p.sku || 'SKU-DEFECTO',
+        unidades: p.cantidad || 1,
+        precio_unidad: p.precio || 79900
+      }))
+    }
+  };
+
+  const response = await fetch(`${hokoApiUrl}/orders/create`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': hokoApiKey
+    },
+    body: JSON.stringify(hokoPayload)
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`API de Hoko respondió con error: ${errText}`);
+  }
+
+  const result = await response.json();
+  const guideNumber = result.numero_guia || (result.data && result.data.guia) || result.id_orden;
+  
+  return { success: true, guideNumber: String(guideNumber || ''), data: result };
 }
 
 function checkAuth(req) {
@@ -156,7 +244,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 3. Reintentar conexión de pedido a Dropi (POST)
+    // 3. Reintentar conexión de pedido a plataforma logística (POST)
     if (req.method === 'POST') {
       const { id } = req.body;
 
@@ -164,7 +252,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'Falta el ID del pedido' });
       }
 
-      // Obtener pedido de la base de datos
       const { data: dbData, error: dbError } = await supabase
         .from('pedidos')
         .select('*')
@@ -176,26 +263,35 @@ export default async function handler(req, res) {
 
       const pedido = dbData[0];
       const productos = pedido.productos_json || [];
+      const proveedorLogistico = pedido.proveedor_logistico || 'Dropi';
 
       if (productos.length === 0) {
         return res.status(400).json({ success: false, error: 'El pedido no tiene productos cargados en formato JSON' });
       }
 
-      // Intentar integración
-      try {
-        const dropiIntegration = await sendOrderToDropi({
-          nombre: pedido.nombre,
-          celular: pedido.celular,
-          direccion: pedido.direccion,
-          ciudad: pedido.ciudad,
-          departamento: pedido.departamento,
-          productos: productos
-        });
+      const orderPayload = {
+        nombre: pedido.nombre,
+        celular: pedido.celular,
+        direccion: pedido.direccion,
+        ciudad: pedido.ciudad,
+        departamento: pedido.departamento,
+        productos: productos
+      };
 
-        if (dropiIntegration.success) {
-          const guideNumber = dropiIntegration.guideNumber;
+      try {
+        let integrationResponse = { success: false, error: 'Proveedor no soportado' };
+        
+        if (proveedorLogistico === 'Dropi') {
+          integrationResponse = await sendOrderToDropi(orderPayload);
+        } else if (proveedorLogistico === 'Effi') {
+          integrationResponse = await sendOrderToEffi(orderPayload);
+        } else if (proveedorLogistico === 'Hoko') {
+          integrationResponse = await sendOrderToHoko(orderPayload);
+        }
+
+        if (integrationResponse.success) {
+          const guideNumber = integrationResponse.guideNumber;
           
-          // Guardar éxito en Supabase
           await supabase
             .from('pedidos')
             .update({
@@ -211,26 +307,24 @@ export default async function handler(req, res) {
             guideNumber
           });
         } else {
-          throw new Error(dropiIntegration.error || 'Error al conectar con Dropi');
+          throw new Error(integrationResponse.error || 'Error al conectar con la API logótica.');
         }
-      } catch (dropiErr) {
-        // Registrar error en Supabase
+      } catch (syncErr) {
         await supabase
           .from('pedidos')
           .update({
             dropi_status: 'Error API',
-            error_log: dropiErr.message
+            error_log: syncErr.message
           })
           .eq('id', id);
 
         return res.status(500).json({
           success: false,
-          error: dropiErr.message
+          error: syncErr.message
         });
       }
     }
 
-    // Método no soportado
     return res.status(405).json({ success: false, error: 'Método no permitido' });
 
   } catch (error) {

@@ -20,6 +20,7 @@ const prodPrecio = document.getElementById('prod-precio');
 const prodPrecioAntiguo = document.getElementById('prod-precio-antiguo');
 const prodSlug = document.getElementById('prod-slug');
 const prodDropiId = document.getElementById('prod-dropi-id');
+const prodProveedor = document.getElementById('prod-proveedor');
 const prodDescripcion = document.getElementById('prod-descripcion');
 const prodImagenes = document.getElementById('prod-imagenes');
 const prodOpciones = document.getElementById('prod-opciones');
@@ -172,7 +173,10 @@ function renderPedidos(pedidos) {
         <td><small>${p.ciudad} (${p.departamento})<br>${p.direccion}</small></td>
         <td><small>${p.producto}</small></td>
         <td><strong>${totalFormateado}</strong></td>
-        <td>${p.id_guia_dropi || '<span style="color:var(--text-muted)">-</span>'}</td>
+        <td>
+          ${p.id_guia_dropi || '<span style="color:var(--text-muted)">-</span>'}
+          <br><small style="color:var(--text-muted)">(${p.proveedor_logistico || 'Dropi'})</small>
+        </td>
         <td><span class="badge ${dropiBadge}">${p.dropi_status || 'Pendiente'}</span></td>
         <td>
           <select onchange="cambiarEstadoPedido(${p.id}, this.value)" style="background:rgba(15,23,42,0.6); color:white; border:1px solid var(--border-card); padding:2px; border-radius:4px;">
@@ -184,7 +188,7 @@ function renderPedidos(pedidos) {
         </td>
         <td>
           ${p.dropi_status !== 'Enviado' ? `
-            <button class="action-btn btn-sync" onclick="reintentarDropi(${p.id})">🔄 Reintentar Dropi</button>
+            <button class="action-btn btn-sync" onclick="reintentarLogistica(${p.id}, '${p.proveedor_logistico || 'Dropi'}')">🔄 Reintentar ${p.proveedor_logistico || 'Dropi'}</button>
           ` : '<span style="color:var(--accent)">✓ Integrado</span>'}
         </td>
       </tr>
@@ -215,9 +219,9 @@ window.cambiarEstadoPedido = async function(id, nuevoEstado) {
   }
 }
 
-// Reintentar conexión con la API de Dropi para un pedido fallido
-window.reintentarDropi = async function(id) {
-  if (!confirm('¿Deseas reenviar este pedido a Dropi?')) return;
+// Reintentar conexión con la API logística para un pedido fallido
+window.reintentarLogistica = async function(id, proveedor = 'Dropi') {
+  if (!confirm(`¿Deseas reenviar este pedido a ${proveedor}?`)) return;
   
   try {
     const response = await fetch('/api/admin/pedidos', {
@@ -231,14 +235,14 @@ window.reintentarDropi = async function(id) {
 
     const data = await response.json();
     if (data.success) {
-      alert('Pedido enviado a Dropi con éxito. Guía generada: ' + data.guideNumber);
+      alert(`Pedido enviado a ${proveedor} con éxito. Guía generada: ` + data.guideNumber);
       cargarPedidos();
     } else {
-      alert('Fallo de integración con Dropi: ' + data.error);
+      alert(`Fallo de integración con ${proveedor}: ` + data.error);
       cargarPedidos();
     }
   } catch (err) {
-    console.error('Error al reintentar Dropi:', err);
+    console.error(`Error al reintentar ${proveedor}:`, err);
     alert('Error de conexión con el servidor backend.');
   }
 }
@@ -309,7 +313,13 @@ function renderProductos(productos) {
         <td><img src="${mainImg}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; border:1px solid var(--border-card);"></td>
         <td><strong>${p.nombre}</strong></td>
         <td><code>${p.sku}</code></td>
-        <td>${p.dropi_id || '<span style="color:var(--text-muted)">N/A</span>'}</td>
+        <td>
+          <span class="badge" style="font-size:0.75rem; background:rgba(79, 70, 229, 0.2); color:#818cf8; padding: 2px 6px; border-radius:4px; font-weight:600; border: 1px solid rgba(129, 140, 248, 0.3);">
+            ${p.proveedor || 'Dropi'}
+          </span>
+          <br>
+          <small style="color:var(--text-muted)">ID: ${p.dropi_id || 'N/A'}</small>
+        </td>
         <td><strong>${precioFormateado}</strong></td>
         <td><code>/p/${p.slug}</code></td>
         <td>
@@ -350,6 +360,7 @@ window.editarProducto = function(product) {
   prodPrecio.value = product.precio;
   prodPrecioAntiguo.value = product.precio_antiguo || '';
   prodSlug.value = product.slug;
+  prodProveedor.value = product.proveedor || 'Dropi';
   prodDropiId.value = product.dropi_id || '';
   prodDescripcion.value = product.descripcion || '';
   prodImagenes.value = product.imagenes.join('\n');
@@ -399,6 +410,7 @@ productoForm.addEventListener('submit', async (e) => {
     precio: parseFloat(prodPrecio.value),
     precio_antiguo: prodPrecioAntiguo.value ? parseFloat(prodPrecioAntiguo.value) : null,
     slug: prodSlug.value,
+    proveedor: prodProveedor.value,
     dropi_id: prodDropiId.value || null,
     descripcion: prodDescripcion.value,
     imagenes: imagenesArray,
