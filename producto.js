@@ -55,12 +55,9 @@ const checkoutForm = document.getElementById('checkout-form');
 const successScreen = document.getElementById('success-screen');
 const submitBtn = document.getElementById('submit-btn');
 
-// Selector de ofertas
-const offerOption1 = document.getElementById('offer-qty-1');
-const offerOption2 = document.getElementById('offer-qty-2');
-const offerOption3 = document.getElementById('offer-qty-3');
-const summarySubtotal = document.getElementById('summary-subtotal');
-const summaryTotal = document.getElementById('summary-total');
+// Selector de ofertas e información de totales
+const ofertaSelect = document.getElementById('oferta-select');
+const btnTotalVal = document.getElementById('btn-total-val');
 
 // Obtener el slug del producto desde la URL (?slug=tenis-deportivos o desde la ruta /p/slug)
 const urlParams = new URLSearchParams(window.location.search);
@@ -133,14 +130,18 @@ function renderizarProducto() {
     precio: price
   };
 
-  // Poblar precios de las opciones de oferta
-  document.getElementById('offer-price-1').innerText = `$${price.toLocaleString('es-CO')} COP`;
+  // Poblar precios de las opciones de oferta en el select dropdown
+  const opt1 = ofertaSelect.options[0];
+  const opt2 = ofertaSelect.options[1];
+  const opt3 = ofertaSelect.options[2];
 
+  if (opt1) opt1.textContent = `Llevar 1 Unidad — $${price.toLocaleString('es-CO')} COP (Envío Gratis)`;
+  
   const priceQty2 = (price * 2) - 20000; // Descuento de 20k
-  document.getElementById('offer-price-2').innerText = `$${priceQty2.toLocaleString('es-CO')} COP`;
+  if (opt2) opt2.textContent = `Llevar 2 Unidades (Ahorras 20k) — $${priceQty2.toLocaleString('es-CO')} COP`;
 
   const priceQty3 = price * 2; // Paga 2 y lleva 3
-  document.getElementById('offer-price-3').innerText = `$${priceQty3.toLocaleString('es-CO')} COP`;
+  if (opt3) opt3.textContent = `Llevar 3 Unidades (Paga 2 Lleva 3) — $${priceQty3.toLocaleString('es-CO')} COP`;
 
   actualizarResumenPrecios();
 
@@ -226,46 +227,39 @@ window.seleccionarOpcion = function (element, valor) {
 }
 
 function configurarManejadoresOfertas(p1, p2, p3) {
-  const opcionesOferta = [
-    { element: offerOption1, qty: 1, price: p1 },
-    { element: offerOption2, qty: 2, price: p2 },
-    { element: offerOption3, qty: 3, price: p3 }
-  ];
+  const preciosPorCantidad = {
+    1: p1,
+    2: p2,
+    3: p3
+  };
 
-  opcionesOferta.forEach(opt => {
-    opt.element.addEventListener('click', () => {
-      // Remover clase activa
-      opcionesOferta.forEach(o => o.element.classList.remove('active-offer'));
+  ofertaSelect.addEventListener('change', (e) => {
+    const qty = parseInt(e.target.value);
+    const price = preciosPorCantidad[qty] || p1;
 
-      // Activar
-      opt.element.classList.add('active-offer');
-      const radio = opt.element.querySelector('input[type="radio"]');
-      if (radio) radio.checked = true;
+    ofertaSeleccionada = {
+      cantidad: qty,
+      precio: price
+    };
 
-      // Actualizar estado global de la oferta seleccionada
-      ofertaSeleccionada = {
-        cantidad: opt.qty,
-        precio: opt.price
-      };
+    actualizarResumenPrecios();
 
-      actualizarResumenPrecios();
-
-      // Track Pixel (InitiateCheckout)
-      if (typeof fbq === 'function') {
-        fbq('track', 'InitiateCheckout', {
-          content_name: productoActual.nombre,
-          value: opt.price,
-          currency: 'COP'
-        });
-      }
-    });
+    // Track Pixel (InitiateCheckout)
+    if (typeof fbq === 'function') {
+      fbq('track', 'InitiateCheckout', {
+        content_name: productoActual.nombre,
+        value: price,
+        currency: 'COP'
+      });
+    }
   });
 }
 
 function actualizarResumenPrecios() {
-  const totalStr = `$${ofertaSeleccionada.precio.toLocaleString('es-CO')} COP`;
-  summarySubtotal.innerText = totalStr;
-  summaryTotal.innerText = totalStr;
+  const totalStr = `$${ofertaSeleccionada.precio.toLocaleString('es-CO')}`;
+  if (btnTotalVal) {
+    btnTotalVal.innerText = totalStr;
+  }
 }
 
 // Inicializar Selectores de Ubicación
@@ -408,31 +402,7 @@ function inicializarPixel() {
   }
 }
 
-// Lógica de Formulario Progresivo (Paso a Paso)
+// Lógica de Formulario Progresivo (Removido para mostrar el formulario ultra compacto de una sola vista)
 function inicializarPasoFormulario() {
-  const nombreInput = document.getElementById('nombre');
-  const celularInput = document.getElementById('celular');
-  const deliveryStep = document.getElementById('delivery-step');
-
-  function verificarPaso1() {
-    const nombreValido = nombreInput.value.trim().length >= 3;
-    const celularValido = /^[0-9]{10}$/.test(celularInput.value.trim());
-
-    if (nombreValido && celularValido) {
-      if (deliveryStep.style.display !== 'block') {
-        deliveryStep.style.display = 'block';
-      }
-    } else {
-      // Si borran o dejan inválido el paso 1, y no han modificado los campos del paso 2, podemos ocultarlo
-      const deptoValido = document.getElementById('departamento').value !== "";
-      const direccionValida = document.getElementById('direccion').value.trim() !== "";
-      
-      if (!deptoValido && !direccionValida) {
-        deliveryStep.style.display = 'none';
-      }
-    }
-  }
-
-  nombreInput.addEventListener('input', verificarPaso1);
-  celularInput.addEventListener('input', verificarPaso1);
+  // El formulario es ahora 100% visible desde el inicio
 }

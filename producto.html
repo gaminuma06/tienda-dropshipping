@@ -441,88 +441,43 @@
             <!-- Formulario de Pedido -->
             <form id="checkout-form" style="padding: 15px 20px;">
               <h3 style="font-size: 1rem; font-weight: 800; color: var(--text-dark); margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
-                <span>🚚</span> DATOS DE ENVÍO (PAGO CONTRAENTREGA)
+                <span>🚚</span> COMPRA RÁPIDA CONTRAENTREGA
               </h3>
 
-              <!-- Datos del Pedido -->
+              <!-- Fila 1: Nombre Completo -->
               <div class="form-group" style="margin-bottom: 10px;">
-                <label for="nombre">Nombre Completo:</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Quien recibe el paquete" required>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre y Apellido (Quien recibe)" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-size: 0.9rem;">
               </div>
 
-              <div class="form-group" style="margin-bottom: 10px;">
-                <label for="celular">Celular (10 dígitos):</label>
-                <input type="tel" id="celular" name="celular" placeholder="Ej. 3123456789" pattern="[0-9]{10}" required>
+              <!-- Fila 2: Dirección y Celular (60/40 en escritorio) -->
+              <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="direccion" name="direccion" placeholder="Dirección de entrega (Ej. Calle 45 # 12-34)" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-size: 0.9rem;">
+                <input type="tel" id="celular" name="celular" placeholder="Celular (10 dígitos)" pattern="[0-9]{10}" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-size: 0.9rem;">
               </div>
 
-              <div id="delivery-step" style="display: none; border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 15px; animation: slideDown 0.3s ease-out;">
-                <div class="form-group" style="margin-bottom: 10px;">
-                  <label for="departamento">Departamento:</label>
-                  <select id="departamento" name="departamento" required>
-                    <option value="">Selecciona tu departamento...</option>
-                  </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 10px;">
-                  <label for="ciudad">Municipio / Ciudad:</label>
-                  <select id="ciudad" name="ciudad" required disabled>
-                    <option value="">Primero selecciona un departamento...</option>
-                  </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 15px;">
-                  <label for="direccion">Dirección de Entrega:</label>
-                  <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Barrio El Prado" required>
-                </div>
-
-                <!-- Selector de Cantidad y Ofertas -->
-                <div class="offers-container" style="margin-bottom: 15px;">
-                  <h3 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark);">Selecciona tu Oferta:</h3>
-                  <div class="offer-option active-offer" id="offer-qty-1" data-qty="1">
-                    <input type="radio" name="oferta" id="opt1" checked>
-                    <label for="opt1">
-                      <strong>1 Unidad</strong>
-                      <span id="offer-price-1">$79.900</span>
-                    </label>
-                  </div>
-                  <div class="offer-option" id="offer-qty-2" data-qty="2">
-                    <input type="radio" name="oferta" id="opt2">
-                    <label for="opt2">
-                      <strong>2 Unidades (-20k)</strong>
-                      <span id="offer-price-2">$139.900</span>
-                    </label>
-                  </div>
-                  <div class="offer-option" id="offer-qty-3" data-qty="3">
-                    <input type="radio" name="oferta" id="opt3">
-                    <label for="opt3">
-                      <strong>Paga 2 Lleva 3</strong>
-                      <span id="offer-price-3">$159.900</span>
-                    </label>
-                  </div>
-                </div>
-
-                <!-- Resumen de Totales -->
-                <div class="checkout-summary" style="margin-top: 0.75rem; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-                  <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
-                    <span>Subtotal:</span>
-                    <span id="summary-subtotal">$79.900 COP</span>
-                  </div>
-                  <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
-                    <span>Envío nacional:</span>
-                    <span class="free-shipping" style="color: #10b981; font-weight: 700;">GRATIS</span>
-                  </div>
-                  <hr style="margin: 6px 0; border: none; border-top: 1px solid var(--border-color);">
-                  <div class="summary-line total-line" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; color: #0f172a;">
-                    <span>Total a pagar:</span>
-                    <span id="summary-total">$79.900 COP</span>
-                  </div>
-                </div>
-
-                <!-- Botón de Envío -->
-                <button type="submit" class="btn-submit-checkout" id="submit-btn" style="margin-top: 0.25rem; width: 100%; font-size: 1rem; padding: 12px;">
-                  🟢 PEDIR CONTRAENTREGA
-                </button>
+              <!-- Fila 3: Departamento y Ciudad (50/50) -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                <select id="departamento" name="departamento" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-size: 0.9rem; background: #f8fafc;">
+                  <option value="">Departamento...</option>
+                </select>
+                <select id="ciudad" name="ciudad" required disabled style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-size: 0.9rem; background: #f8fafc;">
+                  <option value="">Ciudad...</option>
+                </select>
               </div>
+
+              <!-- Fila 4: Selector de Oferta en Dropdown (Compacto) -->
+              <div class="offers-container" style="margin-bottom: 12px;">
+                <select id="oferta-select" name="oferta" style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-weight: 700; font-size: 0.9rem; background: #f8fafc; color: var(--text-dark);">
+                  <option value="1" data-qty="1">Cargando ofertas...</option>
+                  <option value="2" data-qty="2">Cargando ofertas...</option>
+                  <option value="3" data-qty="3">Cargando ofertas...</option>
+                </select>
+              </div>
+
+              <!-- Botón de Envío Único con Total -->
+              <button type="submit" class="btn-submit-checkout" id="submit-btn" style="width: 100%; font-size: 1.05rem; padding: 14px; font-weight: 800; border-radius: 8px;">
+                🟢 COMPRAR CONTRAENTREGA — TOTAL: <span id="btn-total-val">$79.900</span>
+              </button>
             </form>
 
             <!-- Pantalla de Éxito Oculta -->
