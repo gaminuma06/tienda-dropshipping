@@ -50,7 +50,7 @@ function renderizarProductos(productos) {
     const landingUrl = `/p/${p.slug}`;
 
     return `
-      <div class="product-card">
+      <div class="product-card" onclick="window.location.href='${landingUrl}'">
         <span class="product-card-badge">🔥 -${discountPct}% DTO</span>
         <img src="${mainImg}" alt="${p.nombre}" class="product-card-img">
         <div class="product-card-body">
@@ -59,7 +59,7 @@ function renderizarProductos(productos) {
             <span class="product-card-price-current">$${price.toLocaleString('es-CO')} COP</span>
             <span class="product-card-price-old">$${oldPrice.toLocaleString('es-CO')} COP</span>
           </div>
-          <button class="product-card-btn" onclick="window.location.href='${landingUrl}'">🟢 VER OFERTA CONTRAENTREGA</button>
+          <button class="product-card-btn">🟢 COMPRA CONTRAENTREGA</button>
         </div>
       </div>
     `;
