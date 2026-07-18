@@ -62,9 +62,17 @@ const offerOption3 = document.getElementById('offer-qty-3');
 const summarySubtotal = document.getElementById('summary-subtotal');
 const summaryTotal = document.getElementById('summary-total');
 
-// Obtener el slug del producto desde la URL (?slug=tenis-deportivos)
+// Obtener el slug del producto desde la URL (?slug=tenis-deportivos o desde la ruta /p/slug)
 const urlParams = new URLSearchParams(window.location.search);
-const productSlug = urlParams.get('slug');
+let productSlug = urlParams.get('slug');
+
+if (!productSlug) {
+  const pathParts = window.location.pathname.split('/');
+  const pIndex = pathParts.indexOf('p');
+  if (pIndex !== -1 && pathParts[pIndex + 1]) {
+    productSlug = pathParts[pIndex + 1];
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!productSlug) {

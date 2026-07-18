@@ -51,6 +51,7 @@
       flex-direction: column;
       height: 100%;
       position: relative;
+      cursor: pointer;
     }
 
     .product-card:hover {
@@ -213,16 +214,14 @@
   </header>
 
   <main>
-    <!-- Hero Banner -->
-    <section class="hero-banner">
-      <h1>Los Productos Más Vendidos con <span>Pago Contra Entrega</span></h1>
-      <p>Compra en línea de forma 100% segura. Despachamos hoy mismo y pagas al mensajero en la puerta de tu casa.</p>
-    </section>
-
     <!-- Catálogo de Productos Dinámico -->
-    <section class="catalog-section" id="catalogo">
-      <h2>Nuestra Colección de Ofertas</h2>
-      <p>Selecciona tu producto de interés para ver los beneficios, fotos y ofertas de descuento.</p>
+    <section class="catalog-section" id="catalogo" style="margin-top: 2rem;">
+      <h2 style="font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.75rem; text-align: center; line-height: 1.2;">
+        Los Productos Más Vendidos con <span style="color: #10b981;">Pago Contra Entrega</span>
+      </h2>
+      <p style="color: #64748b; font-size: 1.1rem; text-align: center; max-width: 700px; margin: 0 auto 2.5rem auto;">
+        Compra en línea de forma 100% segura. Despachamos hoy mismo y pagas al recibir en tu casa. Selecciona tu producto de interés:
+      </p>
       
       <div class="products-grid" id="home-products-grid">
         <!-- Esqueletos de carga por defecto -->
