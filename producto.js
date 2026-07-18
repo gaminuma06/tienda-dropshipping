@@ -367,7 +367,12 @@ function configurarEnvioFormulario() {
         document.getElementById('success-client-name').innerText = payload.nombre;
         document.getElementById('success-client-phone').innerText = payload.celular;
         document.getElementById('success-order-id').innerText = resData.orderId;
-        document.getElementById('success-product-name').innerText = nombreCompuesto;
+        
+        // Incluir cantidad comprada en el texto descriptivo
+        document.getElementById('success-product-name').innerText = `${ofertaSeleccionada.cantidad}x ${nombreCompuesto}`;
+        
+        // Cargar productos recomendados (Cross-Selling)
+        cargarRecomendacionesExito();
 
         checkoutForm.classList.add('hidden');
         const checkoutHeader = document.querySelector('.checkout-header');
@@ -410,4 +415,47 @@ function inicializarPixel() {
 // Lógica de Formulario Progresivo (Removido para mostrar el formulario ultra compacto de una sola vista)
 function inicializarPasoFormulario() {
   // El formulario es ahora 100% visible desde el inicio
+}
+
+// Cargar recomendaciones de otros productos en la pantalla de éxito
+async function cargarRecomendacionesExito() {
+  try {
+    const response = await fetch('/api/admin/productos');
+    const data = await response.json();
+    
+    if (data.success && data.productos) {
+      // Filtrar el producto actual y los inactivos
+      const recomendados = data.productos
+        .filter(p => p.id !== productoActual.id && p.activo)
+        .slice(0, 2);
+      
+      if (recomendados.length > 0) {
+        const recGrid = document.getElementById('recommendations-grid');
+        recGrid.innerHTML = recomendados.map(p => {
+          const price = parseFloat(p.precio);
+          const image = p.imagenes && p.imagenes.length > 0 
+            ? p.imagenes[0] 
+            : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300';
+          return `
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; text-align: left;" onclick="window.location.href='/p/${p.slug}'">
+              <img src="${image}" alt="${p.nombre}" style="width: 100%; height: 120px; object-fit: cover;">
+              <div style="padding: 8px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h5 style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin: 0 0 4px 0; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.nombre}</h5>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <span style="font-size: 0.85rem; font-weight: 800; color: var(--danger);">$${price.toLocaleString('es-CO')}</span>
+                  <span style="font-size: 0.65rem; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ver</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('success-recommendations').style.display = 'block';
+      }
+    }
+  } catch (err) {
+    console.error('Error cargando recomendaciones de éxito:', err);
+  }
 }

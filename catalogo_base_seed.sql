@@ -40,8 +40,8 @@ INSERT INTO productos (
   '84725',
   'Dropi',
   ARRAY[
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600',
-    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600'
+    'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=600',
+    'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=600'
   ],
   '["Negro", "Naranja", "Gris"]'::jsonb,
   'smartwatch-t900-ultra',

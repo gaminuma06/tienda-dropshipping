@@ -491,6 +491,15 @@
               <p class="success-info" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
                 Tu pedido de <strong id="success-product-name"></strong> está en camino. Te llamaremos al <strong id="success-client-phone"></strong> para confirmar.
               </p>
+              
+              <!-- Recomendaciones de productos adicionales -->
+              <div id="success-recommendations" style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: left; display: none;">
+                <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; text-align: center; letter-spacing: 0.5px;">⚡ TAMBIÉN TE PODRÍA INTERESAR:</h4>
+                <div id="recommendations-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                  <!-- Se inyecta dinámicamente -->
+                </div>
+              </div>
+
               <button onclick="window.location.href='/'" class="btn-secondary-success" style="padding: 8px 20px; font-size: 0.9rem;">Ir a la tienda</button>
             </div>
           </div>
