@@ -370,20 +370,25 @@ function configurarEnvioFormulario() {
         document.getElementById('success-product-name').innerText = nombreCompuesto;
 
         checkoutForm.classList.add('hidden');
-        document.querySelector('.checkout-header').classList.add('hidden');
+        const checkoutHeader = document.querySelector('.checkout-header');
+        if (checkoutHeader) {
+          checkoutHeader.classList.add('hidden');
+        }
         successScreen.classList.remove('hidden');
 
         document.getElementById('checkout-form-section').scrollIntoView({ behavior: 'smooth' });
       } else {
         alert(`Error al guardar el pedido: ${resData.error || 'Error desconocido'}`);
         submitBtn.disabled = false;
-        submitBtn.innerText = "🟢 CONFIRMAR PEDIDO CONTRAENTREGA";
+        submitBtn.innerHTML = '🟢 COMPRAR CONTRAENTREGA — TOTAL: <span id="btn-total-val"></span>';
+        actualizarResumenPrecios();
       }
     } catch (err) {
       console.error('Error al enviar petición:', err);
       alert('Hubo un error de conexión al procesar tu pedido. Intenta nuevamente.');
       submitBtn.disabled = false;
-      submitBtn.innerText = "🟢 CONFIRMAR PEDIDO CONTRAENTREGA";
+      submitBtn.innerHTML = '🟢 COMPRAR CONTRAENTREGA — TOTAL: <span id="btn-total-val"></span>';
+      actualizarResumenPrecios();
     }
   });
 }
