@@ -15,9 +15,20 @@
   
   <style>
     /* Estilos Premium para la Landing de Producto */
+    /* Ocultar elementos superiores innecesarios para optimizar conversión */
+    .top-bar {
+      display: none !important;
+    }
+    header {
+      display: none !important;
+    }
+    main {
+      padding-top: 1.5rem !important;
+    }
+
     .product-layout {
       max-width: 1200px;
-      margin: 1.5rem auto;
+      margin: 1rem auto;
       padding: 0 1.5rem;
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
@@ -35,7 +46,7 @@
       flex-direction: column;
       gap: 1.5rem;
       position: sticky;
-      top: 90px;
+      top: 20px;
       align-self: start;
     }
 
@@ -357,38 +368,40 @@
           </div>
         </div>
 
-        <!-- COLUMNA DERECHA (Título, Variaciones y Formulario Rápido Sticky) -->
+        <!-- COLUMNA DERECHA (Formulario de Compra Unificado Sticky) -->
         <div class="right-column-wrapper">
-          <!-- 2. INFO CABECERA -->
-          <div class="info-container" style="background: white; padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-            <span class="category-tag">PRODUCTO EXCLUSIVO</span>
-            <h1 id="landing-title" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Nombre del Producto</h1>
-            <div class="rating" style="margin-bottom: 0.75rem;">
-              ⭐⭐⭐⭐⭐ <span class="rating-text" id="landing-rating-count">(94 valoraciones)</span>
-            </div>
+          <div class="checkout-container" id="checkout-form-section">
+            
+            <!-- Título, Precio y Opciones del Producto (Integrado) -->
+            <div class="checkout-product-info" style="padding: 15px 20px; border-bottom: 1.5px solid var(--border-color); background: #f8fafc;">
+              <span class="category-tag" style="font-size: 0.75rem; font-weight: 800; color: var(--secondary); letter-spacing: 0.5px; display: block; margin-bottom: 4px;">PRODUCTO EXCLUSIVO</span>
+              <h1 id="landing-title" style="font-size: 1.5rem; margin: 0 0 6px 0; color: var(--text-dark); font-weight: 800; line-height: 1.2;">Nombre del Producto</h1>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                <div class="rating" style="font-size: 0.85rem;">
+                  ⭐⭐⭐⭐⭐ <span class="rating-text" id="landing-rating-count" style="font-size: 0.75rem; color: var(--text-muted);">(94 valoraciones)</span>
+                </div>
+                <div class="prices" style="display: flex; align-items: baseline; gap: 8px; margin: 0;">
+                  <span class="current-price" id="landing-price-current" style="color: var(--danger); font-size: 1.4rem; font-weight: 800;">$79.900 COP</span>
+                  <span class="old-price" id="landing-price-old" style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem;">$135.000 COP</span>
+                </div>
+              </div>
 
-            <div class="prices" style="margin-bottom: 1rem;">
-              <span class="old-price" id="landing-price-old">$135.000 COP</span>
-              <span class="current-price" id="landing-price-current" style="color: var(--danger); font-size: 1.8rem; font-weight: 800;">$79.900 COP</span>
-            </div>
-
-            <!-- Tallas / Variaciones -->
-            <div class="variations-box" id="variations-container" style="display: none; margin: 0;">
-              <div class="variations-title" style="margin-bottom: 0.5rem;">SELECCIONA TALLA / OPCIÓN:</div>
-              <div class="options-grid" id="options-buttons-grid">
-                <!-- Se inyecta dinámicamente -->
+              <!-- Tallas / Variaciones -->
+              <div class="variations-box" id="variations-container" style="display: none; margin: 8px 0 0 0; padding-top: 8px; border-top: 1px dashed var(--border-color);">
+                <div class="variations-title" style="margin-bottom: 6px; font-size: 0.75rem; font-weight: 700; color: var(--text-dark);">SELECCIONA TALLA / OPCIÓN:</div>
+                <div class="options-grid" id="options-buttons-grid">
+                  <!-- Se inyecta dinámicamente -->
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 4. FORMULARIO DE COMPRA -->
-          <div class="checkout-container" id="checkout-form-section">
-            <div class="checkout-header" style="background: linear-gradient(135deg, var(--text-dark) 0%, #1e293b 100%); color: white; padding: 15px; text-align: center;">
-              <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem;">🛒 PEDIDO RÁPIDO CONTRAENTREGA</h2>
-              <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Completa tus datos y pagas al recibir en casa.</p>
-            </div>
+            <!-- Formulario de Pedido -->
+            <form id="checkout-form" style="padding: 15px 20px;">
+              <h3 style="font-size: 1rem; font-weight: 800; color: var(--text-dark); margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;">
+                <span>🚚</span> DATOS DE ENVÍO (PAGO CONTRAENTREGA)
+              </h3>
 
-            <form id="checkout-form" style="padding: 15px;">
               <!-- Datos del Pedido -->
               <div class="form-group" style="margin-bottom: 10px;">
                 <label for="nombre">Nombre Completo:</label>
@@ -421,7 +434,7 @@
 
               <!-- Selector de Cantidad y Ofertas -->
               <div class="offers-container" style="margin-bottom: 15px;">
-                <h3 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 8px;">Selecciona tu Oferta:</h3>
+                <h3 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark);">Selecciona tu Oferta:</h3>
                 <div class="offer-option active-offer" id="offer-qty-1" data-qty="1">
                   <input type="radio" name="oferta" id="opt1" checked>
                   <label for="opt1">
