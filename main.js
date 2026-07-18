@@ -71,11 +71,8 @@ function renderizarSinProductos() {
   
   homeProductsGrid.innerHTML = `
     <div style="grid-column: 1/-1; padding: 4rem 2rem; text-align: center; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
-      <h3 style="color:#0f172a; margin-bottom: 0.5rem; font-size: 1.3rem;">👋 ¡Bienvenido a tu Tienda!</h3>
-      <p style="color:#64748b; margin-bottom: 1.5rem;">Aún no has registrado ningún producto en tu base de datos de Supabase.</p>
-      <button onclick="window.location.href='/admin'" style="background:#10b981; color:white; border:none; padding:0.8rem 2rem; font-weight:600; border-radius:8px; cursor:pointer;">
-        Ingresar al Panel /admin para agregar productos
-      </button>
+      <h3 style="color:#0f172a; margin-bottom: 0.5rem; font-size: 1.3rem;">👋 ¡Próximamente novedades!</h3>
+      <p style="color:#64748b; margin-bottom: 0;">Estamos preparando el catálogo de nuestras mejores ofertas. Regresa pronto.</p>
     </div>
   `;
 }

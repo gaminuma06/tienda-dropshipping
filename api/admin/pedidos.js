@@ -174,14 +174,19 @@ async function sendOrderToHoko(orderData) {
   return { success: true, guideNumber: String(guideNumber || ''), data: result };
 }
 
-function checkAuth(req) {
+async function checkAuth(req) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return false;
   
   const token = authHeader.replace('Bearer ', '').trim();
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin12345';
   
-  return token === adminPassword;
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) return false;
+    return true;
+  } catch (err) {
+    return false;
+  }
 }
 
 export default async function handler(req, res) {
@@ -200,7 +205,8 @@ export default async function handler(req, res) {
   }
 
   // Validar autorización
-  if (!checkAuth(req)) {
+  const isAuthorized = await checkAuth(req);
+  if (!isAuthorized) {
     return res.status(401).json({ success: false, error: 'No autorizado' });
   }
 

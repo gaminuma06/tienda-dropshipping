@@ -106,14 +106,14 @@ function renderizarProducto() {
   // Poblar información textual
   landingTitle.innerText = productoActual.nombre;
   landingDescription.innerText = productoActual.descripcion || 'Sin descripción disponible.';
-  
+
   // Calcular precios y ofertas
   const price = parseFloat(productoActual.precio);
   const oldPrice = productoActual.precio_antiguo ? parseFloat(productoActual.precio_antiguo) : price * 1.5;
-  
+
   landingPriceCurrent.innerText = `$${price.toLocaleString('es-CO')} COP`;
   landingPriceOld.innerText = `$${oldPrice.toLocaleString('es-CO')} COP`;
-  
+
   // Descuento calculado
   const discountPct = Math.round(((oldPrice - price) / oldPrice) * 100);
   landingDiscount.innerText = `🔥 -${discountPct}% DTO. SÓLO HOY`;
@@ -126,10 +126,10 @@ function renderizarProducto() {
 
   // Poblar precios de las opciones de oferta
   document.getElementById('offer-price-1').innerText = `$${price.toLocaleString('es-CO')} COP`;
-  
+
   const priceQty2 = (price * 2) - 20000; // Descuento de 20k
   document.getElementById('offer-price-2').innerText = `$${priceQty2.toLocaleString('es-CO')} COP`;
-  
+
   const priceQty3 = price * 2; // Paga 2 y lleva 3
   document.getElementById('offer-price-3').innerText = `$${priceQty3.toLocaleString('es-CO')} COP`;
 
@@ -139,7 +139,7 @@ function renderizarProducto() {
   const imagenes = productoActual.imagenes || [];
   if (imagenes.length > 0) {
     landingMainImg.src = imagenes[0];
-    
+
     // Crear miniaturas
     landingThumbsGrid.innerHTML = imagenes.map((img, idx) => `
       <div class="thumb-item ${idx === 0 ? 'active' : ''}" onclick="cambiarImagenPrincipal(this, '${img}')">
@@ -193,9 +193,9 @@ function renderizarProducto() {
 }
 
 // Cambiar la imagen grande
-window.cambiarImagenPrincipal = function(element, imgSrc) {
+window.cambiarImagenPrincipal = function (element, imgSrc) {
   landingMainImg.style.opacity = '0';
-  
+
   setTimeout(() => {
     landingMainImg.src = imgSrc;
     landingMainImg.style.opacity = '1';
@@ -208,7 +208,7 @@ window.cambiarImagenPrincipal = function(element, imgSrc) {
 }
 
 // Seleccionar Talla/Color
-window.seleccionarOpcion = function(element, valor) {
+window.seleccionarOpcion = function (element, valor) {
   document.querySelectorAll('.option-btn').forEach(btn => {
     btn.classList.remove('selected');
   });
@@ -227,7 +227,7 @@ function configurarManejadoresOfertas(p1, p2, p3) {
     opt.element.addEventListener('click', () => {
       // Remover clase activa
       opcionesOferta.forEach(o => o.element.classList.remove('active-offer'));
-      
+
       // Activar
       opt.element.classList.add('active-offer');
       const radio = opt.element.querySelector('input[type="radio"]');
@@ -262,7 +262,7 @@ function actualizarResumenPrecios() {
 // Inicializar Selectores de Ubicación
 function inicializarUbicaciones() {
   const departamentosOrdenados = Object.keys(ubicacionesColombia).sort();
-  
+
   departamentosOrdenados.forEach(dept => {
     const option = document.createElement('option');
     option.value = dept;
@@ -273,7 +273,7 @@ function inicializarUbicaciones() {
   departamentoSelect.addEventListener('change', (e) => {
     const depto = e.target.value;
     ciudadSelect.innerHTML = '<option value="">Selecciona tu municipio...</option>';
-    
+
     if (depto && ubicacionesColombia[depto]) {
       ciudadSelect.disabled = false;
       ubicacionesColombia[depto].sort().forEach(ciudad => {
@@ -303,8 +303,8 @@ function configurarEnvioFormulario() {
     submitBtn.disabled = true;
     submitBtn.innerText = "⏳ PROCESANDO TU PEDIDO...";
 
-    const nombreCompuesto = opcionSeleccionada 
-      ? `${productoActual.nombre} (${opcionSeleccionada})` 
+    const nombreCompuesto = opcionSeleccionada
+      ? `${productoActual.nombre} (${opcionSeleccionada})`
       : productoActual.nombre;
 
     // Formatear los productos comprados para la API
@@ -365,7 +365,7 @@ function configurarEnvioFormulario() {
         document.getElementById('success-client-phone').innerText = payload.celular;
         document.getElementById('success-order-id').innerText = resData.orderId;
         document.getElementById('success-product-name').innerText = nombreCompuesto;
-        
+
         checkoutForm.classList.add('hidden');
         document.querySelector('.checkout-header').classList.add('hidden');
         successScreen.classList.remove('hidden');

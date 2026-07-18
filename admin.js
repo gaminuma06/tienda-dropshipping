@@ -31,16 +31,34 @@ const modalTitle = document.getElementById('modal-title');
 
 // Inicialización de la pantalla al cargar
 document.addEventListener('DOMContentLoaded', () => {
-  if (authToken) {
-    showDashboard();
+  // Comprobar si viene redirigido con un token de recuperación en el Hash (Supabase)
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const accessToken = hashParams.get('access_token');
+  const type = hashParams.get('type');
+
+  if (accessToken && type === 'recovery') {
+    authToken = accessToken;
+    sessionStorage.setItem('admin_token', accessToken);
+
+    // Mostrar el formulario de restablecer contraseña y ocultar login
+    authScreen.style.display = 'flex';
+    mainDashboard.style.display = 'none';
+    authForm.style.display = 'none';
+    document.getElementById('auth-description').innerText = 'Establece tu nueva contraseña para acceder.';
+    document.getElementById('reset-password-card').style.display = 'block';
   } else {
-    showAuth();
+    if (authToken) {
+      showDashboard();
+    } else {
+      showAuth();
+    }
   }
 });
 
 // Manejo de la autenticación
 authForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  const email = document.getElementById('email').value;
   const password = passwordInput.value;
 
   try {
@@ -49,7 +67,7 @@ authForm.addEventListener('submit', async (e) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ password })
+      body: JSON.stringify({ email, password })
     });
 
     const data = await response.json();
@@ -59,7 +77,7 @@ authForm.addEventListener('submit', async (e) => {
       sessionStorage.setItem('admin_token', authToken);
       showDashboard();
     } else {
-      alert(data.error || 'Contraseña incorrecta');
+      alert(data.error || 'Credenciales incorrectas');
       passwordInput.value = '';
     }
   } catch (err) {
@@ -71,6 +89,11 @@ authForm.addEventListener('submit', async (e) => {
 function showAuth() {
   authScreen.style.display = 'flex';
   mainDashboard.style.display = 'none';
+  authForm.style.display = 'block';
+  document.getElementById('auth-description').style.display = 'block';
+  document.getElementById('auth-description').innerText = 'Ingresa tu correo y contraseña registrados en Supabase Auth.';
+  document.getElementById('recover-card').style.display = 'none';
+  document.getElementById('reset-password-card').style.display = 'none';
 }
 
 function showDashboard() {
@@ -82,10 +105,85 @@ function showDashboard() {
   cargarProductos();
 }
 
-function logout() {
+window.logout = function() {
   sessionStorage.removeItem('admin_token');
   authToken = null;
   showAuth();
+}
+
+// Funciones de Recuperación de Contraseña
+window.abrirRecuperarCard = function(event) {
+  event.preventDefault();
+  authForm.style.display = 'none';
+  document.getElementById('auth-description').style.display = 'none';
+  document.getElementById('recover-card').style.display = 'block';
+}
+
+window.cancelarRecuperacion = function() {
+  showAuth();
+}
+
+window.solicitarRecuperacion = async function() {
+  const email = document.getElementById('recover-email').value;
+  if (!email) {
+    alert('Por favor ingresa tu correo electrónico.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/auth', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'recover', email })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert(data.message);
+      showAuth();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (err) {
+    console.error('Error al solicitar recuperación:', err);
+    alert('Error al conectar con el servidor.');
+  }
+}
+
+window.guardarNuevaContrasena = async function() {
+  const newPassword = document.getElementById('reset-password-val').value;
+  if (!newPassword || newPassword.length < 6) {
+    alert('La contraseña debe tener al menos 6 caracteres.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/admin/auth', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ action: 'reset-password', password: newPassword })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert('Tu contraseña se ha restablecido correctamente.');
+      
+      // Limpiar hash URL
+      window.history.replaceState(null, null, ' ');
+      
+      showAuth();
+    } else {
+      alert('Error al restablecer contraseña: ' + data.error);
+    }
+  } catch (err) {
+    console.error('Error al guardar nueva contraseña:', err);
+    alert('Error al conectar con el servidor.');
+  }
 }
 
 // Navegación entre pestañas

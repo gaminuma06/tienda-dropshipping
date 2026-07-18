@@ -407,14 +407,49 @@
   <div id="auth-screen">
     <div class="auth-card">
       <h2>Panel Administrativo</h2>
-      <p>Digita la contraseña configurada en tu archivo .env para acceder.</p>
+      <p id="auth-description">Ingresa tu correo y contraseña registrados en Supabase Auth.</p>
+      
+      <!-- Formulario de Login -->
       <form id="auth-form">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="email">CORREO ELECTRÓNICO:</label>
+          <input type="email" id="email" class="form-control" placeholder="ejemplo@correo.com" required>
+        </div>
         <div class="form-group">
-          <label for="password">CONTRASEÑA DE ACCESO:</label>
+          <label for="password">CONTRASEÑA:</label>
           <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <div style="text-align: right; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+          <a href="#" onclick="abrirRecuperarCard(event)" style="color:var(--accent); font-size:0.85rem; text-decoration:none; font-weight:600;">¿Olvidaste tu contraseña?</a>
         </div>
         <button type="submit" class="btn">INGRESAR AL PANEL</button>
       </form>
+
+      <!-- Formulario de Recuperación (Oculto por defecto) -->
+      <div id="recover-card" style="display: none; margin-top: 1rem; border-top: 1px solid var(--border-card); padding-top: 1.5rem; text-align: left;">
+        <h3 style="font-size:1.1rem; margin-bottom: 0.5rem; font-weight:700;">Recuperar Contraseña</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 1.2rem;">Enviaremos un enlace de restablecimiento a tu correo registrado.</p>
+        <div class="form-group">
+          <label for="recover-email">CORREO DE ADMINISTRADOR:</label>
+          <input type="email" id="recover-email" class="form-control" placeholder="ejemplo@correo.com">
+        </div>
+        <div style="display:flex; gap:0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn" style="flex:1; width:auto; padding:0.6rem;" onclick="solicitarRecuperacion()">Enviar Correo</button>
+          <button type="button" class="btn-secondary" style="flex:1; width:auto; padding:0.6rem;" onclick="cancelarRecuperacion()">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Formulario de Restablecimiento Nueva Clave (Oculto por defecto) -->
+      <div id="reset-password-card" style="display: none; margin-top: 1rem; border-top: 1px solid var(--border-card); padding-top: 1.5rem; text-align: left;">
+        <h3 style="font-size:1.1rem; margin-bottom: 0.5rem; font-weight:700;">Nueva Contraseña</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 1.2rem;">Ingresa tu nueva clave de acceso de administrador.</p>
+        <div class="form-group">
+          <label for="reset-password-val">NUEVA CONTRASEÑA:</label>
+          <input type="password" id="reset-password-val" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6">
+        </div>
+        <button type="button" class="btn" style="width:100%; margin-top: 1.5rem;" onclick="guardarNuevaContrasena()">Guardar Contraseña</button>
+      </div>
+
     </div>
   </div>
 
