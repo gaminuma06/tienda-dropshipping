@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargando Producto...</title>
+  
+  <!-- Estilos base compartidos -->
+  <link rel="stylesheet" href="/style.css">
+  
+  <!-- Fuente Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Estilos Premium para la Landing de Producto */
+    .product-layout {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+    }
+
+    @media (max-width: 900px) {
+      .product-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    .gallery-container {
+      position: sticky;
+      top: 100px;
+    }
+
+    .main-img-box {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      background: #f8fafc;
+      border: 1px solid rgba(0,0,0,0.03);
+      position: relative;
+    }
+
+    .main-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .thumbs-grid {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.2rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .thumb-item {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .thumb-item.active {
+      border-color: #10b981;
+      transform: scale(1.05);
+    }
+
+    .thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Opciones de variación (tallas/colores) */
+    .variations-box {
+      margin: 1.5rem 0;
+    }
+
+    .variations-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #475569;
+      margin-bottom: 0.75rem;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .option-btn {
+      padding: 0.6rem 1.2rem;
+      border: 1px solid #cbd5e1;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .option-btn:hover {
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    .option-btn.selected {
+      background: #10b981;
+      border-color: #10b981;
+      color: white;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Carga / Error State UI */
+    #loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border-left-color: #10b981;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Reviews */
+    .review-stars-inline {
+      color: #fbbf24;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge-discount-float {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      background: #ef4444;
+      color: white;
+      padding: 0.4rem 1rem;
+      font-weight: 800;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+      z-index: 2;
+    }
+  </style>
+
+  <!-- Script del Píxel de Meta -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+  </script>
+</head>
+<body>
+
+  <!-- Banner de Urgencia -->
+  <div class="top-bar">
+    ⚡ Envío Gratis y Pago Contra Entrega en Toda Colombia (Pagas al Recibir) ⚡
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo" style="cursor: pointer;" onclick="window.location.href='/'">ECOMMERCE<span>EXPRESS</span></div>
+      <a href="#checkout-form-section" class="btn-primary-header">COMPRAR CONTRAENTREGA</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Pantalla de Carga -->
+    <div id="loading-state">
+      <div class="spinner"></div>
+      <h2 id="loading-text">Cargando producto estrella...</h2>
+    </div>
+
+    <!-- Pantalla de Error -->
+    <div id="error-state" style="display: none; text-align: center; padding: 5rem 1.5rem;">
+      <h1 style="color:#ef4444; margin-bottom:1rem;">❌ Producto No Encontrado</h1>
+      <p style="color:#64748b; margin-bottom:2rem;">La página de ventas solicitada no existe o fue dada de baja temporalmente.</p>
+      <button class="btn-primary-header" style="display:inline-block;" onclick="window.location.href='/'">Ir al catálogo principal</button>
+    </div>
+
+    <!-- Contenido Principal de la Landing Page -->
+    <div id="product-content" style="display: none;">
+      <section class="hero-section">
+        <div class="product-layout">
+          
+          <!-- Columna Izquierda: Galería -->
+          <div class="gallery-container">
+            <div class="main-img-box">
+              <span class="badge-discount-float" id="landing-discount">-40% DTO SÓLO HOY</span>
+              <img src="" alt="Imagen del Producto" id="landing-main-img">
+            </div>
+            <div class="thumbs-grid" id="landing-thumbs-grid">
+              <!-- Carga dinámica de miniaturas -->
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Compra Rápida -->
+          <div class="product-info">
+            <span class="category-tag">PRODUCTO EXCLUSIVO</span>
+            <h1 id="landing-title">Nombre del Producto</h1>
+            <div class="rating">
+              ⭐⭐⭐⭐⭐ <span class="rating-text" id="landing-rating-count">(94 valoraciones de clientes)</span>
+            </div>
+
+            <div class="prices">
+              <span class="old-price" id="landing-price-old">$135.000 COP</span>
+              <span class="current-price" id="landing-price-current">$79.900 COP</span>
+            </div>
+
+            <p class="product-description" id="landing-description">
+              Cargando descripción...
+            </p>
+
+            <!-- Tallas / Variaciones -->
+            <div class="variations-box" id="variations-container" style="display: none;">
+              <div class="variations-title">SELECCIONA TALLA / OPCIÓN:</div>
+              <div class="options-grid" id="options-buttons-grid">
+                <!-- Se inyecta dinámicamente -->
+              </div>
+            </div>
+
+            <!-- Beneficios de Compra Rápida -->
+            <div class="features-list">
+              <div class="feature-item">
+                <span class="icon">📦</span>
+                <div>
+                  <strong>Envío Gratis a Todo Colombia</strong>
+                  <p>Costo de envío cubierto por nuestra cuenta.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="icon">🤝</span>
+                <div>
+                  <strong>Pago Contra Entrega</strong>
+                  <p>Recibes el producto y le pagas en efectivo al mensajero.</p>
+                </div>
+              </div>
+            </div>
+
+            <a href="#checkout-form-section" class="btn-ctaPulse">PEDIR Y PAGAR EN CASA</a>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Beneficios del Producto -->
+      <section class="benefits-section" id="benefits-section-container" style="display: none;">
+        <h2>Características Destacadas</h2>
+        <div class="benefits-grid" id="benefits-cards-grid">
+          <!-- Tarjetas dinámicas de beneficios -->
+        </div>
+      </section>
+
+      <!-- Formulario de Checkout integrado -->
+      <section class="checkout-section" id="checkout-form-section">
+        <div class="checkout-container">
+          <div class="checkout-header">
+            <h2>🛒 FORMULARIO DE COMPRA RÁPIDA</h2>
+            <p>Por favor llena tus datos de entrega. Pagas en efectivo al recibir el paquete.</p>
+          </div>
+
+          <form id="checkout-form">
+            <!-- Datos del Pedido -->
+            <div class="form-group">
+              <label for="nombre">Nombre Completo (Quien recibe):</label>
+              <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+            </div>
+
+            <div class="form-group">
+              <label for="celular">Número de Celular (10 dígitos):</label>
+              <input type="tel" id="celular" name="celular" placeholder="Ej. 3123456789" pattern="[0-9]{10}" required>
+              <small>Te llamaremos o escribiremos por WhatsApp para confirmar antes de enviar.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="departamento">Departamento:</label>
+              <select id="departamento" name="departamento" required>
+                <option value="">Selecciona tu departamento...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="ciudad">Municipio / Ciudad:</label>
+              <select id="ciudad" name="ciudad" required disabled>
+                <option value="">Primero selecciona un departamento...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="direccion">Dirección Completa (Casa, Apto, Barrio):</label>
+              <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Apto 302, Barrio El Prado" required>
+            </div>
+
+            <!-- Selector de Cantidad y Ofertas -->
+            <div class="offers-container">
+              <h3>Selecciona tu Oferta Exclusiva:</h3>
+              <div class="offer-option active-offer" id="offer-qty-1" data-qty="1">
+                <input type="radio" name="oferta" id="opt1" checked>
+                <label for="opt1">
+                  <strong>Llevar 1 Unidad</strong>
+                  <span id="offer-price-1">$79.900 COP</span>
+                </label>
+              </div>
+              <div class="offer-option" id="offer-qty-2" data-qty="2">
+                <input type="radio" name="oferta" id="opt2">
+                <label for="opt2">
+                  <strong>Llevar 2 Unidades (Ahorras 20k)</strong>
+                  <span class="badge-saving">¡Más Vendido!</span>
+                  <span id="offer-price-2">$139.900 COP</span>
+                </label>
+              </div>
+              <div class="offer-option" id="offer-qty-3" data-qty="3">
+                <input type="radio" name="oferta" id="opt3">
+                <label for="opt3">
+                  <strong>Llevar 3 Unidades (Paga 2 y Lleva 3)</strong>
+                  <span id="offer-price-3">$179.900 COP</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Resumen de Totales -->
+            <div class="checkout-summary">
+              <div class="summary-line">
+                <span>Subtotal:</span>
+                <span id="summary-subtotal">$79.900 COP</span>
+              </div>
+              <div class="summary-line">
+                <span>Envío nacional:</span>
+                <span class="free-shipping">GRATIS</span>
+              </div>
+              <hr>
+              <div class="summary-line total-line">
+                <span>Total a pagar en casa:</span>
+                <span id="summary-total">$79.900 COP</span>
+              </div>
+            </div>
+
+            <!-- Botón de Envío -->
+            <button type="submit" class="btn-submit-checkout" id="submit-btn">
+              🟢 CONFIRMAR PEDIDO CONTRAENTREGA
+            </button>
+          </form>
+
+          <!-- Pantalla de Éxito Oculta -->
+          <div id="success-screen" class="success-screen hidden">
+            <div class="success-icon">✅</div>
+            <h2>¡Pedido Recibido con Éxito!</h2>
+            <p>Muchas gracias por tu compra, <strong id="success-client-name"></strong>.</p>
+            <div class="order-id-box">Código de Pedido: <span id="success-order-id"></span></div>
+            <p class="success-info">
+              Tu pedido de <strong id="success-product-name"></strong> está siendo procesado de forma automática. Te contactaremos vía llamada o WhatsApp al número <strong id="success-client-phone"></strong> para confirmar los detalles de entrega antes del despacho.
+            </p>
+            <button onclick="window.location.href='/'" class="btn-secondary-success">Volver a la tienda principal</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Testimonios de clientes -->
+      <section class="reviews-section" id="reviews-section-container" style="display: none;">
+        <h2>Opiniones de Nuestros Clientes</h2>
+        <div class="reviews-container" id="reviews-cards-grid">
+          <!-- Opiniones dinámicas -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 ECOMMERCE EXPRESS. Todos los derechos reservados.</p>
+    <p>Desarrollado con fines de dropshipping local automatizado.</p>
+  </footer>
+
+  <script type="module" src="/producto.js"></script>
+</body>
+</html>

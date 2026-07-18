@@ -8,6 +8,99 @@ function sha256(text) {
   return crypto.createHash('sha256').update(cleanText).digest('hex');
 }
 
+// Función para enviar el pedido a la API de Dropi
+async function sendOrderToDropi(orderData) {
+  const dropiApiUrl = process.env.DROPI_API_URL || 'https://api.dropi.co';
+  const dropiEmail = process.env.DROPI_EMAIL;
+  const dropiPassword = process.env.DROPI_PASSWORD;
+  
+  if (!dropiEmail || !dropiPassword) {
+    console.log('Dropi credentials not configured in environment variables. Skipping API integration.');
+    return { success: false, error: 'Credenciales de Dropi no configuradas' };
+  }
+  
+  try {
+    // 1. Login en Dropi para obtener Token JWT
+    const loginResponse = await fetch(`${dropiApiUrl}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: dropiEmail.trim(),
+        password: dropiPassword.trim()
+      })
+    });
+    
+    if (!loginResponse.ok) {
+      const loginErr = await loginResponse.text();
+      throw new Error(`Login en Dropi fallido: ${loginErr}`);
+    }
+    
+    const loginResult = await loginResponse.json();
+    const token = loginResult.token || (loginResult.data && loginResult.data.token) || loginResult.jwt;
+    
+    if (!token) {
+      throw new Error('Token no encontrado en la respuesta del inicio de sesión de Dropi.');
+    }
+    
+    // 2. Mapear datos a la estructura que requiere la API de Dropi
+    const nameParts = orderData.nombre.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || '.';
+    
+    const dropiProducts = orderData.productos.map(p => ({
+      id: parseInt(p.dropi_id) || 12345, // ID del producto en Dropi (configurado en Supabase)
+      quantity: parseInt(p.cantidad) || 1,
+      price: parseFloat(p.precio) || 79900
+    }));
+    
+    const dropiPayload = {
+      calculate_costs_and_shiping: true,
+      state: orderData.departamento.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""), // Sin tildes y en mayúscula
+      city: orderData.ciudad.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+      client_email: 'tienda@dropshipping.com',
+      name: firstName,
+      surname: lastName,
+      dir: orderData.direccion,
+      phone: orderData.celular,
+      products: dropiProducts
+    };
+    
+    // 3. Registrar la orden en Dropi
+    const orderResponse = await fetch(`${dropiApiUrl}/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(dropiPayload)
+    });
+    
+    if (!orderResponse.ok) {
+      const orderErr = await orderResponse.text();
+      throw new Error(`Error en creación de orden de Dropi: ${orderErr}`);
+    }
+    
+    const orderResult = await orderResponse.json();
+    
+    const guideNumber = orderResult.shipping_guide_number || 
+                        (orderResult.data && orderResult.data.numero_guia) || 
+                        (orderResult.data && orderResult.data.id) ||
+                        orderResult.id;
+                        
+    return {
+      success: true,
+      guideNumber: String(guideNumber || ''),
+      data: orderResult
+    };
+    
+  } catch (error) {
+    console.error('Error integrando con la API de Dropi:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -28,7 +121,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { nombre, celular, direccion, ciudad, departamento, producto, cantidad, total, sourceUrl, userAgent, clientIp } = req.body;
+    const { nombre, celular, direccion, ciudad, departamento, producto, cantidad, total, productos, sourceUrl, userAgent, clientIp } = req.body;
 
     // 1. Validaciones Básicas
     if (!nombre || !celular || !direccion || !ciudad || !departamento) {
@@ -37,6 +130,18 @@ export default async function handler(req, res) {
 
     if (celular.trim().length !== 10) {
       return res.status(400).json({ success: false, error: 'El número de celular debe tener 10 dígitos.' });
+    }
+
+    // Adaptar productos si es un pedido de un único producto (para retrocompatibilidad)
+    let finalProducts = productos;
+    if (!finalProducts || !Array.isArray(finalProducts) || finalProducts.length === 0) {
+      finalProducts = [{
+        nombre: producto || 'Producto Único',
+        cantidad: parseInt(cantidad) || 1,
+        precio: parseFloat(total) || 79900,
+        sku: 'SKU-DEFECTO',
+        dropi_id: '12345'
+      }];
     }
 
     // 2. Insertar pedido en la Base de Datos de Supabase
@@ -49,10 +154,12 @@ export default async function handler(req, res) {
           direccion: direccion.trim(),
           ciudad: ciudad.trim(),
           departamento: departamento.trim(),
-          producto: producto || 'Producto Único',
-          cantidad: parseInt(cantidad) || 1,
-          total: parseFloat(total) || 79900,
+          producto: finalProducts.map(p => `${p.nombre} (x${p.cantidad})`).join(', '), // Resumen en texto
+          cantidad: finalProducts.reduce((sum, p) => sum + (p.cantidad || 1), 0),
+          total: parseFloat(total) || finalProducts.reduce((sum, p) => sum + ((p.precio * p.cantidad) || 0), 0),
+          productos_json: finalProducts,
           estado_guia: 'Pendiente', // Pendiente, Confirmado, Despachado, Entregado, Devuelto, Cancelado
+          dropi_status: 'Pendiente API',
           fecha: new Date().toISOString()
         }
       ])
@@ -60,13 +167,54 @@ export default async function handler(req, res) {
 
     if (dbError) {
       console.error('Error insertando en Supabase:', dbError);
-      // Continuamos aunque falle la BD para no perder la experiencia del usuario,
-      // pero lanzamos advertencia en respuesta interna si estamos en dev.
     }
 
     const orderId = dbData && dbData[0] ? dbData[0].id : 'TEMP-' + Date.now();
 
-    // 3. Registrar Conversión en Meta Ads a través de la Conversion API (CAPI)
+    // 3. Integración Automática con Dropi (si hay credenciales configuradas)
+    let dropiGuideNumber = null;
+    let dropiStatusResult = 'Pendiente API';
+    let dropiErrorResult = null;
+
+    if (process.env.DROPI_EMAIL && process.env.DROPI_PASSWORD) {
+      const dropiIntegration = await sendOrderToDropi({
+        nombre: nombre.trim(),
+        celular: celular.trim(),
+        direccion: direccion.trim(),
+        ciudad: ciudad.trim(),
+        departamento: departamento.trim(),
+        productos: finalProducts
+      });
+
+      if (dropiIntegration.success) {
+        dropiGuideNumber = dropiIntegration.guideNumber;
+        dropiStatusResult = 'Enviado';
+
+        // Actualizar el pedido en Supabase con el número de guía de Dropi
+        await supabase
+          .from('pedidos')
+          .update({
+            id_guia_dropi: dropiGuideNumber,
+            dropi_status: dropiStatusResult,
+            estado_guia: 'Confirmado'
+          })
+          .eq('id', orderId);
+      } else {
+        dropiStatusResult = 'Error API';
+        dropiErrorResult = dropiIntegration.error || 'Error desconocido';
+
+        // Registrar el log de error en Supabase
+        await supabase
+          .from('pedidos')
+          .update({
+            dropi_status: dropiStatusResult,
+            error_log: dropiErrorResult
+          })
+          .eq('id', orderId);
+      }
+    }
+
+    // 4. Registrar Conversión en Meta Ads (API de Conversiones - CAPI)
     const pixelId = process.env.META_PIXEL_ID;
     const metaToken = process.env.META_ACCESS_TOKEN;
     const testCode = process.env.META_TEST_EVENT_CODE;
@@ -102,21 +250,18 @@ export default async function handler(req, res) {
             },
             custom_data: {
               currency: 'COP',
-              value: parseFloat(total) || 79900,
+              value: parseFloat(total) || finalProducts.reduce((sum, p) => sum + ((p.precio * p.cantidad) || 0), 0),
               content_type: 'product',
-              contents: [
-                {
-                  id: producto || 'producto_unico',
-                  quantity: parseInt(cantidad) || 1
-                }
-              ]
+              contents: finalProducts.map(p => ({
+                id: p.sku || 'producto_unico',
+                quantity: p.cantidad || 1
+              }))
             },
             opt_out: false
           }
         ]
       };
 
-      // Si configuramos código de prueba en Meta
       if (testCode) {
         capiPayload.test_event_code = testCode;
       }
@@ -132,14 +277,14 @@ export default async function handler(req, res) {
       } catch (metaErr) {
         console.error('Error enviando a Meta CAPI:', metaErr);
       }
-    } else {
-      console.log('Meta CAPI no configurado. Faltan META_PIXEL_ID o META_ACCESS_TOKEN.');
     }
 
     return res.status(200).json({
       success: true,
       message: 'Pedido registrado con éxito.',
-      orderId: orderId
+      orderId: orderId,
+      dropiStatus: dropiStatusResult,
+      dropiGuide: dropiGuideNumber
     });
 
   } catch (error) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Producto Estrella - Tienda de Pruebas</title>
+  <title>Tienda Dropshipping Express Colombia</title>
   <link rel="stylesheet" href="/style.css">
   
   <!-- Fuente Premium Google Fonts -->
@@ -11,7 +11,181 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Script del Píxel de Meta (Cargar dinámicamente o configurar manualmente) -->
+  <style>
+    /* Estilos del catálogo en la Home */
+    .catalog-section {
+      max-width: 1200px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+
+    .catalog-section h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: #0f172a;
+    }
+
+    .catalog-section p {
+      color: #64748b;
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.03);
+      transition: all 0.3s ease;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    .product-card-img {
+      width: 100%;
+      aspect-ratio: 1.1;
+      object-fit: cover;
+      background: #f8fafc;
+    }
+
+    .product-card-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: #ef4444;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      font-weight: 800;
+      font-size: 0.75rem;
+      border-radius: 50px;
+    }
+
+    .product-card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+
+    .product-card-prices {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .product-card-price-current {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #10b981;
+    }
+
+    .product-card-price-old {
+      font-size: 1rem;
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .product-card-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: #10b981;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: background 0.3s;
+      margin-top: auto;
+      border: none;
+      cursor: pointer;
+    }
+
+    .product-card-btn:hover {
+      background: #059669;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(16, 185, 129, 0.15);
+      border-radius: 50%;
+      top: -100px;
+      right: -100px;
+      filter: blur(80px);
+    }
+
+    .hero-banner h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero-banner h1 span {
+      color: #10b981;
+    }
+
+    .hero-banner p {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto 2rem auto;
+    }
+
+    /* Skeleton Loading */
+    .skeleton-card {
+      background: #f1f5f9;
+      height: 380px;
+      border-radius: 16px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+  </style>
+
+  <!-- Script del Píxel de Meta -->
   <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -21,225 +195,62 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    
-    // Si tienes tu ID de Pixel, configúralo aquí o déjalo dinámico
-    const PIXEL_ID = "TU_PIXEL_ID_AQUÍ"; 
-    if (PIXEL_ID && PIXEL_ID !== "TU_PIXEL_ID_AQUÍ") {
-      fbq('init', PIXEL_ID);
-      fbq('track', 'PageView');
-    }
   </script>
 </head>
 <body>
 
   <!-- Banner de Urgencia -->
   <div class="top-bar">
-    ⚡ ¡OFERTA EXCLUSIVA! Envío Gratis y Pago Contra Entrega en Toda Colombia ⚡
+    ⚡ Envío Gratis y Pago Contra Entrega en Toda Colombia (Pagas en Efectivo al Recibir) ⚡
   </div>
 
   <!-- Header -->
   <header>
     <div class="header-container">
       <div class="logo">ECOMMERCE<span>EXPRESS</span></div>
-      <a href="#checkout-section" class="btn-primary-header">COMPRAR AHORA</a>
+      <a href="#catalogo" class="btn-primary-header">VER CATÁLOGO</a>
     </div>
   </header>
 
   <main>
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="hero-container">
-        <!-- Carrusel / Galería de Imágenes -->
-        <div class="product-gallery">
-          <div class="badge-discount">🔥 -40% DTO. SÓLO HOY</div>
-          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" alt="Producto Principal" id="main-product-img">
-          <div class="gallery-thumbnails">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=150" class="active-thumb" onclick="changeImage(this)">
-            <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=150" onclick="changeImage(this)">
-            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=150" onclick="changeImage(this)">
-          </div>
-        </div>
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <h1>Los Productos Más Vendidos con <span>Pago Contra Entrega</span></h1>
+      <p>Compra en línea de forma 100% segura. Despachamos hoy mismo y pagas al mensajero en la puerta de tu casa.</p>
+      <a href="#catalogo" class="btn-ctaPulse" style="max-width: 250px; display: inline-block;">COMPRAR AHORA</a>
+    </section>
 
-        <!-- Información de Venta Rápida -->
-        <div class="product-info">
-          <span class="category-tag">LO MÁS VENDIDO EN COLOMBIA</span>
-          <h1>Tenis Deportivos UltraComfort Pro</h1>
-          <div class="rating">
-            ⭐⭐⭐⭐⭐ <span class="rating-text">(148 valoraciones de clientes)</span>
-          </div>
-
-          <div class="prices">
-            <span class="old-price">$135.000 COP</span>
-            <span class="current-price">$79.900 COP</span>
-          </div>
-
-          <p class="product-description">
-            Experimenta el siguiente nivel de comodidad diaria. Diseñados con tecnología ergonómica que absorbe los impactos, ideales para trotar, ir al gimnasio o usar en tu día a día con total confort.
-          </p>
-
-          <!-- Tarjetas de Garantía COD -->
-          <div class="features-list">
-            <div class="feature-item">
-              <span class="icon">📦</span>
-              <div>
-                <strong>Envío Gratis a Domicilio</strong>
-                <p>No pagas nada extra por el flete.</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <span class="icon">🤝</span>
-              <div>
-                <strong>Pago Contra Entrega</strong>
-                <p>Pagas en efectivo al recibir el paquete en tu casa.</p>
-              </div>
-            </div>
-          </div>
-
-          <a href="#checkout-section" class="btn-ctaPulse">PEDIR Y PAGAR EN CASA</a>
-        </div>
+    <!-- Catálogo de Productos Dinámico -->
+    <section class="catalog-section" id="catalogo">
+      <h2>Nuestra Colección de Ofertas</h2>
+      <p>Selecciona tu producto de interés para ver los beneficios, fotos y ofertas de descuento.</p>
+      
+      <div class="products-grid" id="home-products-grid">
+        <!-- Esqueletos de carga por defecto -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
     </section>
 
-    <!-- Beneficios del Producto -->
+    <!-- Beneficios del Servicio -->
     <section class="benefits-section">
-      <h2>¿Por qué elegir UltraComfort Pro?</h2>
+      <h2>¿Por qué comprar con nosotros?</h2>
       <div class="benefits-grid">
         <div class="benefit-card">
           <div class="benefit-icon">☁️</div>
-          <h3>Suela Anti-Impacto</h3>
-          <p>Reduce la presión en rodillas y articulaciones al caminar o correr.</p>
+          <h3>Productos Garantizados</h3>
+          <p>Revisamos detalladamente cada producto antes de enviarlo para asegurar tu satisfacción.</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon">🌬️</div>
-          <h3>Material Transpirable</h3>
-          <p>Mantiene tus pies frescos, secos y libres de malos olores todo el día.</p>
+          <h3>Envío Gratuito Asegurado</h3>
+          <p>No tienes que pagar flete, cubrimos el envío rápido a tu ciudad o municipio.</p>
         </div>
         <div class="benefit-card">
-          <div class="benefit-icon">💪</div>
-          <h3>Alta Durabilidad</h3>
-          <p>Suela reforzada antideslizante de larga duración para cualquier terreno.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Formulario de Checkout / Landing -->
-    <section class="checkout-section" id="checkout-section">
-      <div class="checkout-container">
-        <div class="checkout-header">
-          <h2>🛒 FORMULARIO DE COMPRA RÁPIDA</h2>
-          <p>Llena tus datos a continuación para procesar tu orden. Paga en efectivo al recibir.</p>
-        </div>
-
-        <form id="checkout-form">
-          <!-- Datos del Pedido -->
-          <div class="form-group">
-            <label for="nombre">Nombre Completo (Quien recibe):</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
-          </div>
-
-          <div class="form-group">
-            <label for="celular">Número de Celular (10 dígitos):</label>
-            <input type="tel" id="celular" name="celular" placeholder="Ej. 3123456789" pattern="[0-9]{10}" required>
-            <small>Te llamaremos para confirmar la dirección antes de enviar.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="departamento">Departamento:</label>
-            <select id="departamento" name="departamento" required>
-              <option value="">Selecciona tu departamento...</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="ciudad">Municipio / Ciudad:</label>
-            <select id="ciudad" name="ciudad" required disabled>
-              <option value="">Primero selecciona un departamento...</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="direccion">Dirección Completa (Casa, Apto, Barrio):</label>
-            <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Apto 302, Barrio El Prado" required>
-          </div>
-
-          <!-- Selector de Cantidad y Ofertas -->
-          <div class="offers-container">
-            <h3>Selecciona tu Oferta Exclusiva:</h3>
-            <div class="offer-option active-offer" data-qty="1" data-price="79900">
-              <input type="radio" name="oferta" id="opt1" checked>
-              <label for="opt1">
-                <strong>Llevar 1 Par</strong>
-                <span>$79.900 COP</span>
-              </label>
-            </div>
-            <div class="offer-option" data-qty="2" data-price="129900">
-              <input type="radio" name="oferta" id="opt2">
-              <label for="opt2">
-                <strong>Llevar 2 Pares (Ahorras 20k)</strong>
-                <span class="badge-saving">¡Más Vendido!</span>
-                <span>$129.900 COP</span>
-              </label>
-            </div>
-            <div class="offer-option" data-qty="3" data-price="179900">
-              <input type="radio" name="oferta" id="opt3">
-              <label for="opt3">
-                <strong>Llevar 3 Pares (Paga 2 y Lleva 3)</strong>
-                <span>$179.900 COP</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Resumen de Totales -->
-          <div class="checkout-summary">
-            <div class="summary-line">
-              <span>Subtotal:</span>
-              <span id="summary-subtotal">$79.900 COP</span>
-            </div>
-            <div class="summary-line">
-              <span>Envío nacional:</span>
-              <span class="free-shipping">GRATIS</span>
-            </div>
-            <hr>
-            <div class="summary-line total-line">
-              <span>Total a pagar en casa:</span>
-              <span id="summary-total">$79.900 COP</span>
-            </div>
-          </div>
-
-          <!-- Botón de Acción -->
-          <button type="submit" class="btn-submit-checkout" id="submit-btn">
-            🟢 CONFIRMAR PEDIDO CONTRAENTREGA
-          </button>
-        </form>
-
-        <!-- Pantalla de Éxito Oculta -->
-        <div id="success-screen" class="success-screen hidden">
-          <div class="success-icon">✅</div>
-          <h2>¡Pedido Recibido con Éxito!</h2>
-          <p>Gracias por tu compra, <strong id="success-client-name"></strong>.</p>
-          <div class="order-id-box">Código de Pedido: <span id="success-order-id"></span></div>
-          <p class="success-info">
-            Tu pedido está siendo procesado. Te contactaremos vía llamada o WhatsApp al número <strong id="success-client-phone"></strong> para validar tu dirección antes de realizar el despacho.
-          </p>
-          <button onclick="resetCheckout()" class="btn-secondary-success">Realizar otra compra</button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Testimonios de clientes en Colombia -->
-    <section class="reviews-section">
-      <h2>Opiniones de Nuestros Clientes</h2>
-      <div class="reviews-container">
-        <div class="review-card">
-          <div class="review-stars">⭐⭐⭐⭐⭐</div>
-          <p>"Llegaron super rápido a Cali, en 3 días. Los tenis son muy livianos y cómodos. Pagué cuando me los entregó Servientrega. Muy recomendado."</p>
-          <strong>- Carlos M. (Cali)</strong>
-        </div>
-        <div class="review-card">
-          <div class="review-stars">⭐⭐⭐⭐⭐</div>
-          <p>"Excelente servicio. Me llamaron para confirmar la dirección y me llegaron al día siguiente en Bogotá. La suela es muy suave para caminar."</p>
-          <strong>- Andrea S. (Bogotá)</strong>
+          <div class="benefit-icon">🤝</div>
+          <h3>Pagas en la Puerta</h3>
+          <p>Cero riesgos. Solo pagas cuando recibes el paquete físico en tus manos.</p>
         </div>
       </div>
     </section>
@@ -247,7 +258,7 @@
 
   <footer>
     <p>© 2026 ECOMMERCE EXPRESS. Todos los derechos reservados.</p>
-    <p>Desarrollado con fines demostrativos para venta de dropshipping local.</p>
+    <p>Desarrollado para la venta rápida y automatizada en Colombia.</p>
   </footer>
 
   <script type="module" src="/main.js"></script>

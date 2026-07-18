@@ -76,6 +76,11 @@ web_modules/
 # vercel
 .vercel
 
+# production build output
+dist/
+dist
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
