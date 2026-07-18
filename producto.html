@@ -20,20 +20,67 @@
       margin: 2rem auto;
       padding: 0 1.5rem;
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-areas:
+        "gallery info"
+        "description form"
+        "benefits form"
+        "reviews form";
       gap: 3rem;
     }
 
     @media (max-width: 900px) {
       .product-layout {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        grid-template-areas:
+          "gallery"
+          "info"
+          "form"
+          "description"
+          "benefits"
+          "reviews";
+        gap: 1.5rem;
       }
     }
 
-    .gallery-container {
-      position: sticky;
-      top: 100px;
+    .gallery-container { 
+      grid-area: gallery; 
+    }
+    
+    .info-container { 
+      grid-area: info; 
+    }
+    
+    .description-container { 
+      grid-area: description; 
+    }
+    
+    .checkout-container { 
+      grid-area: form;
+      max-width: 100% !important;
+      margin: 0 !important;
+      background-color: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    @media (min-width: 901px) {
+      .checkout-container {
+        position: sticky;
+        top: 90px;
+        align-self: start;
+      }
+    }
+
+    .benefits-container { 
+      grid-area: benefits; 
+    }
+    
+    .reviews-container { 
+      grid-area: reviews; 
     }
 
     .main-img-box {
@@ -215,189 +262,192 @@
 
     <!-- Contenido Principal de la Landing Page -->
     <div id="product-content" style="display: none;">
-      <section class="hero-section">
-        <div class="product-layout">
-          
-          <!-- Columna Izquierda: Galería -->
-          <div class="gallery-container">
-            <div class="main-img-box">
-              <span class="badge-discount-float" id="landing-discount">-40% DTO SÓLO HOY</span>
-              <img src="" alt="Imagen del Producto" id="landing-main-img">
-            </div>
-            <div class="thumbs-grid" id="landing-thumbs-grid">
-              <!-- Carga dinámica de miniaturas -->
-            </div>
+      <div class="product-layout">
+        
+        <!-- 1. GALERÍA -->
+        <div class="gallery-container">
+          <div class="main-img-box">
+            <span class="badge-discount-float" id="landing-discount">-40% DTO SÓLO HOY</span>
+            <img src="" alt="Imagen del Producto" id="landing-main-img">
           </div>
-
-          <!-- Columna Derecha: Compra Rápida -->
-          <div class="product-info">
-            <span class="category-tag">PRODUCTO EXCLUSIVO</span>
-            <h1 id="landing-title">Nombre del Producto</h1>
-            <div class="rating">
-              ⭐⭐⭐⭐⭐ <span class="rating-text" id="landing-rating-count">(94 valoraciones de clientes)</span>
-            </div>
-
-            <div class="prices">
-              <span class="old-price" id="landing-price-old">$135.000 COP</span>
-              <span class="current-price" id="landing-price-current">$79.900 COP</span>
-            </div>
-
-            <p class="product-description" id="landing-description">
-              Cargando descripción...
-            </p>
-
-            <!-- Tallas / Variaciones -->
-            <div class="variations-box" id="variations-container" style="display: none;">
-              <div class="variations-title">SELECCIONA TALLA / OPCIÓN:</div>
-              <div class="options-grid" id="options-buttons-grid">
-                <!-- Se inyecta dinámicamente -->
-              </div>
-            </div>
-
-            <!-- Beneficios de Compra Rápida -->
-            <div class="features-list">
-              <div class="feature-item">
-                <span class="icon">📦</span>
-                <div>
-                  <strong>Envío Gratis a Todo Colombia</strong>
-                  <p>Costo de envío cubierto por nuestra cuenta.</p>
-                </div>
-              </div>
-              <div class="feature-item">
-                <span class="icon">🤝</span>
-                <div>
-                  <strong>Pago Contra Entrega</strong>
-                  <p>Recibes el producto y le pagas en efectivo al mensajero.</p>
-                </div>
-              </div>
-            </div>
-
-            <a href="#checkout-form-section" class="btn-ctaPulse">PEDIR Y PAGAR EN CASA</a>
+          <div class="thumbs-grid" id="landing-thumbs-grid">
+            <!-- Carga dinámica de miniaturas -->
           </div>
-
         </div>
-      </section>
 
-      <!-- Beneficios del Producto -->
-      <section class="benefits-section" id="benefits-section-container" style="display: none;">
-        <h2>Características Destacadas</h2>
-        <div class="benefits-grid" id="benefits-cards-grid">
-          <!-- Tarjetas dinámicas de beneficios -->
-        </div>
-      </section>
-
-      <!-- Formulario de Checkout integrado -->
-      <section class="checkout-section" id="checkout-form-section">
-        <div class="checkout-container">
-          <div class="checkout-header">
-            <h2>🛒 FORMULARIO DE COMPRA RÁPIDA</h2>
-            <p>Por favor llena tus datos de entrega. Pagas en efectivo al recibir el paquete.</p>
+        <!-- 2. INFO CABECERA -->
+        <div class="info-container">
+          <span class="category-tag">PRODUCTO EXCLUSIVO</span>
+          <h1 id="landing-title" style="margin-bottom:0.5rem;">Nombre del Producto</h1>
+          <div class="rating" style="margin-bottom: 1rem;">
+            ⭐⭐⭐⭐⭐ <span class="rating-text" id="landing-rating-count">(94 valoraciones de clientes)</span>
           </div>
 
-          <form id="checkout-form">
+          <div class="prices" style="margin-bottom: 1.5rem;">
+            <span class="old-price" id="landing-price-old">$135.000 COP</span>
+            <span class="current-price" id="landing-price-current" style="color:var(--danger);">$79.900 COP</span>
+          </div>
+
+          <!-- Tallas / Variaciones -->
+          <div class="variations-box" id="variations-container" style="display: none;">
+            <div class="variations-title">SELECCIONA TALLA / OPCIÓN:</div>
+            <div class="options-grid" id="options-buttons-grid">
+              <!-- Se inyecta dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Beneficios rápidos -->
+          <div class="features-list" style="margin-top: 1.5rem;">
+            <div class="feature-item">
+              <span class="icon">📦</span>
+              <div>
+                <strong>Envío Gratis a Todo Colombia</strong>
+                <p>Costo de envío cubierto por nuestra cuenta.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="icon">🤝</span>
+              <div>
+                <strong>Pago Contra Entrega</strong>
+                <p>Recibes el producto y le pagas al recibir.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. DESCRIPCIÓN PERSUASIVA -->
+        <div class="description-container" style="margin-top: 1rem;">
+          <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a;">
+            Descripción Detallada
+          </h2>
+          <div class="product-description-rich" id="landing-description" style="line-height: 1.7; font-size: 1.05rem; color: #334155;">
+            Cargando descripción...
+          </div>
+        </div>
+
+        <!-- 4. FORMULARIO DE COMPRA (Sticky) -->
+        <div class="checkout-container" id="checkout-form-section">
+          <div class="checkout-header" style="background: linear-gradient(135deg, var(--text-dark) 0%, #1e293b 100%); color: white; padding: 20px; text-align: center;">
+            <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.25rem;">🛒 PEDIDO RÁPIDO</h2>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Pagas en efectivo al recibir en tu casa.</p>
+          </div>
+
+          <form id="checkout-form" style="padding: 20px;">
             <!-- Datos del Pedido -->
-            <div class="form-group">
-              <label for="nombre">Nombre Completo (Quien recibe):</label>
-              <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label for="nombre">Nombre Completo:</label>
+              <input type="text" id="nombre" name="nombre" placeholder="Quien recibe el paquete" required>
             </div>
 
-            <div class="form-group">
-              <label for="celular">Número de Celular (10 dígitos):</label>
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label for="celular">Celular (10 dígitos):</label>
               <input type="tel" id="celular" name="celular" placeholder="Ej. 3123456789" pattern="[0-9]{10}" required>
-              <small>Te llamaremos o escribiremos por WhatsApp para confirmar antes de enviar.</small>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 15px;">
               <label for="departamento">Departamento:</label>
               <select id="departamento" name="departamento" required>
                 <option value="">Selecciona tu departamento...</option>
               </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 15px;">
               <label for="ciudad">Municipio / Ciudad:</label>
               <select id="ciudad" name="ciudad" required disabled>
                 <option value="">Primero selecciona un departamento...</option>
               </select>
             </div>
 
-            <div class="form-group">
-              <label for="direccion">Dirección Completa (Casa, Apto, Barrio):</label>
-              <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Apto 302, Barrio El Prado" required>
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label for="direccion">Dirección de Entrega:</label>
+              <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Barrio El Prado" required>
             </div>
 
             <!-- Selector de Cantidad y Ofertas -->
-            <div class="offers-container">
-              <h3>Selecciona tu Oferta Exclusiva:</h3>
+            <div class="offers-container" style="margin-bottom: 20px;">
+              <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 10px;">Selecciona tu Oferta:</h3>
               <div class="offer-option active-offer" id="offer-qty-1" data-qty="1">
                 <input type="radio" name="oferta" id="opt1" checked>
                 <label for="opt1">
-                  <strong>Llevar 1 Unidad</strong>
-                  <span id="offer-price-1">$79.900 COP</span>
+                  <strong>1 Unidad</strong>
+                  <span id="offer-price-1">$79.900</span>
                 </label>
               </div>
               <div class="offer-option" id="offer-qty-2" data-qty="2">
                 <input type="radio" name="oferta" id="opt2">
                 <label for="opt2">
-                  <strong>Llevar 2 Unidades (Ahorras 20k)</strong>
-                  <span class="badge-saving">¡Más Vendido!</span>
-                  <span id="offer-price-2">$139.900 COP</span>
+                  <strong>2 Unidades (-20k)</strong>
+                  <span id="offer-price-2">$139.900</span>
                 </label>
               </div>
               <div class="offer-option" id="offer-qty-3" data-qty="3">
                 <input type="radio" name="oferta" id="opt3">
                 <label for="opt3">
-                  <strong>Llevar 3 Unidades (Paga 2 y Lleva 3)</strong>
-                  <span id="offer-price-3">$179.900 COP</span>
+                  <strong>Paga 2 Lleva 3</strong>
+                  <span id="offer-price-3">$159.900</span>
                 </label>
               </div>
             </div>
 
             <!-- Resumen de Totales -->
-            <div class="checkout-summary">
-              <div class="summary-line">
+            <div class="checkout-summary" style="margin-top: 1rem; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+              <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px;">
                 <span>Subtotal:</span>
                 <span id="summary-subtotal">$79.900 COP</span>
               </div>
-              <div class="summary-line">
+              <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px;">
                 <span>Envío nacional:</span>
-                <span class="free-shipping">GRATIS</span>
+                <span class="free-shipping" style="color: #10b981; font-weight: 700;">GRATIS</span>
               </div>
-              <hr>
-              <div class="summary-line total-line">
-                <span>Total a pagar en casa:</span>
+              <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+              <div class="summary-line total-line" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: #0f172a;">
+                <span>Total a pagar:</span>
                 <span id="summary-total">$79.900 COP</span>
               </div>
             </div>
 
             <!-- Botón de Envío -->
-            <button type="submit" class="btn-submit-checkout" id="submit-btn">
-              🟢 CONFIRMAR PEDIDO CONTRAENTREGA
+            <button type="submit" class="btn-submit-checkout" id="submit-btn" style="margin-top: 0.5rem; width: 100%; font-size: 1.1rem; padding: 15px;">
+              🟢 CONFIRMAR COMPRA CONTRAENTREGA
             </button>
           </form>
 
           <!-- Pantalla de Éxito Oculta -->
-          <div id="success-screen" class="success-screen hidden">
-            <div class="success-icon">✅</div>
-            <h2>¡Pedido Recibido con Éxito!</h2>
-            <p>Muchas gracias por tu compra, <strong id="success-client-name"></strong>.</p>
-            <div class="order-id-box">Código de Pedido: <span id="success-order-id"></span></div>
-            <p class="success-info">
-              Tu pedido de <strong id="success-product-name"></strong> está siendo procesado de forma automática. Te contactaremos vía llamada o WhatsApp al número <strong id="success-client-phone"></strong> para confirmar los detalles de entrega antes del despacho.
+          <div id="success-screen" class="success-screen hidden" style="padding: 30px 20px; text-align: center;">
+            <div class="success-icon" style="font-size: 3.5rem; margin-bottom: 15px;">✅</div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-bottom: 10px;">¡Pedido Confirmado!</h2>
+            <p style="font-size: 1rem; color: var(--text-dark);">Gracias por tu compra, <strong id="success-client-name"></strong>.</p>
+            <div class="order-id-box" style="margin: 15px 0; font-size: 1rem; padding: 8px 20px; background: #f1f5f9; border-radius: 8px; border: 1.5px dashed var(--border-color); display: inline-block; font-weight: 800;">
+              Pedido: <span id="success-order-id"></span>
+            </div>
+            <p class="success-info" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
+              Tu pedido de <strong id="success-product-name"></strong> está en camino. Te llamaremos o escribiremos al celular <strong id="success-client-phone"></strong> para coordinar la entrega.
             </p>
-            <button onclick="window.location.href='/'" class="btn-secondary-success">Volver a la tienda principal</button>
+            <button onclick="window.location.href='/'" class="btn-secondary-success" style="padding: 10px 25px; font-size: 0.95rem;">Ir a la tienda</button>
           </div>
-
         </div>
-      </section>
 
-      <!-- Testimonios de clientes -->
-      <section class="reviews-section" id="reviews-section-container" style="display: none;">
-        <h2>Opiniones de Nuestros Clientes</h2>
-        <div class="reviews-container" id="reviews-cards-grid">
-          <!-- Opiniones dinámicas -->
+        <!-- 5. BENEFICIOS -->
+        <div class="benefits-container" id="benefits-section-container" style="display: none; margin-top: 2rem;">
+          <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
+            Características Destacadas
+          </h2>
+          <div class="benefits-grid" id="benefits-cards-grid">
+            <!-- Tarjetas dinámicas de beneficios -->
+          </div>
         </div>
-      </section>
+
+        <!-- 6. TESTIMONIOS -->
+        <div class="reviews-container" id="reviews-section-container" style="display: none; margin-top: 2rem;">
+          <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
+            Opiniones de Clientes
+          </h2>
+          <div class="reviews-container" id="reviews-cards-grid" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+            <!-- Opiniones dinámicas -->
+          </div>
+        </div>
+
+      </div>
     </div>
   </main>
 

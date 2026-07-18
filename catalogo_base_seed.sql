@@ -1,8 +1,12 @@
 -- ==========================================================
 -- SCRIPT DE SEMILLA (SEED): CATÁLOGO BASE DE DROPSHIPPING
 -- Ejecuta este código en el SQL Editor de tu Supabase
--- para cargar 3 productos estrella listos para vender.
+-- para cargar 3 productos estrella con descripciones atractivas
+-- y estructuradas en HTML.
 -- ==========================================================
+
+-- Primero limpiamos los productos de prueba anteriores para evitar duplicados por SKU
+DELETE FROM productos WHERE sku IN ('SW-T900-ULTRA', 'SHAVER-PRO-20', 'TRAVEL-BAGS-6P');
 
 INSERT INTO productos (
   nombre, 
@@ -21,7 +25,15 @@ INSERT INTO productos (
 ) VALUES 
 (
   'Smartwatch T900 Ultra Series 8',
-  'El reloj inteligente más vendido del mercado. Con pantalla táctil de alta definición, monitoreo de ritmo cardíaco, llamadas Bluetooth directas y resistencia al agua. El accesorio ideal para tu día a día y deportes.',
+  '<p>El <strong>Smartwatch T900 Ultra Series 8</strong> es el compañero tecnológico definitivo para tu estilo de vida activo y moderno.</p>
+   <h4 style="margin: 1.2rem 0 0.6rem 0; color: #0f172a; font-weight: 800; font-size: 1.15rem;">🔥 Características Clave:</h4>
+   <ul style="padding-left: 1.2rem; margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+     <li><strong>Pantalla Infinita de 1.99":</strong> Colores vibrantes y alta definición visible bajo cualquier condición de luz.</li>
+     <li><strong>Llamadas Bluetooth HD:</strong> Micrófono y altavoz integrados para responder y realizar llamadas sin sacar tu celular.</li>
+     <li><strong>Salud al Día:</strong> Monitoreo de frecuencia cardíaca, oxígeno en sangre, presión y control de sueño profundo.</li>
+     <li><strong>Modos de Deporte Inteligentes:</strong> Registra calorías, pasos, distancia y rendimiento físico en tiempo real para 12 disciplinas.</li>
+   </ul>
+   <p style="margin-top: 1.2rem; font-weight: 600; color: #10b981;">💪 ¡Luce elegante, mantente conectado y monitorea tu día con el diseño deportivo más resistente del mercado!</p>',
   79900,
   135000,
   'SW-T900-ULTRA',
@@ -46,7 +58,15 @@ INSERT INTO productos (
 ),
 (
   'Afeitadora Profesional Shaver Pro 2.0',
-  'Consigue un afeitado al ras y contornos perfectos sin irritación. Diseñada para uso profesional y personal, con motor de alta potencia, cuchillas de titanio hipoalergénicas y pantalla LED de batería.',
+  '<p>Consigue un afeitado ultra suave, delineados perfectos y contornos limpios sin irritación con la afeitadora profesional <strong>Shaver Pro 2.0</strong>.</p>
+   <h4 style="margin: 1.2rem 0 0.6rem 0; color: #0f172a; font-weight: 800; font-size: 1.15rem;">✂️ Beneficios Destacados:</h4>
+   <ul style="padding-left: 1.2rem; margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+     <li><strong>Cuchillas de Titanio Auto-afilables:</strong> Evitan la irritación y cortan con precisión quirúrgica el vello más grueso.</li>
+     <li><strong>Motor Turbo de 7200 RPM:</strong> Potencia constante sin tirones de vello, ideal para todo tipo de cabello y barba.</li>
+     <li><strong>Pantalla LED Digital:</strong> Monitorea en tiempo real el porcentaje de batería y alertas de lubricación.</li>
+     <li><strong>Batería de Alta Capacidad:</strong> Hasta 120 minutos de uso continuo inalámbrico con carga rápida USB-C en 1.5 horas.</li>
+   </ul>
+   <p style="margin-top: 1.2rem; font-weight: 600; color: #10b981;">🛡️ ¡El accesorio ideal para el aseo diario masculino, brindando calidad de barbería en tu propia casa!</p>',
   89900,
   149000,
   'SHAVER-PRO-20',
@@ -71,7 +91,15 @@ INSERT INTO productos (
 ),
 (
   'Organizador de Viaje Impermeable Premium',
-  'Mantén tu equipaje perfectamente ordenado y libre de humedad con este set de organizadores de viaje impermeables. Incluye 6 bolsas de diferentes tamaños con cremalleras reforzadas y malla respirable.',
+  '<p>Viaja con total comodidad, protege tu equipaje y mantén tus pertenencias 100% ordenadas con el <strong>Set Organizador de 6 Piezas</strong>.</p>
+   <h4 style="margin: 1.2rem 0 0.6rem 0; color: #0f172a; font-weight: 800; font-size: 1.15rem;">✈️ ¿Por qué lo necesitas?</h4>
+   <ul style="padding-left: 1.2rem; margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+     <li><strong>Ahorra hasta un 40% de Espacio:</strong> Comprime y distribuye tu equipaje eficientemente dentro de tu maleta.</li>
+     <li><strong>Tejido Oxford Impermeable:</strong> Repela el agua y protege tus prendas de la humedad o derrames de líquidos.</li>
+     <li><strong>Malla Superior de Ventilación:</strong> Identifica fácilmente el contenido sin desordenar nada y evita malos olores.</li>
+     <li><strong>Kit Multifuncional Completo:</strong> Incluye 6 bolsas de tamaños específicos para ropa interior, calzado, camisas y accesorios.</li>
+   </ul>
+   <p style="margin-top: 1.2rem; font-weight: 600; color: #10b981;">🗂️ ¡Dile adiós al caos de armar y desarmar equipaje. Viaja cómodo, organizado y sin contratiempos!</p>',
   49900,
   85000,
   'TRAVEL-BAGS-6P',

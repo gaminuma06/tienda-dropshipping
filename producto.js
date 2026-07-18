@@ -113,7 +113,7 @@ function renderizarProducto() {
 
   // Poblar información textual
   landingTitle.innerText = productoActual.nombre;
-  landingDescription.innerText = productoActual.descripcion || 'Sin descripción disponible.';
+  landingDescription.innerHTML = productoActual.descripcion || 'Sin descripción disponible.';
 
   // Calcular precios y ofertas
   const price = parseFloat(productoActual.precio);
