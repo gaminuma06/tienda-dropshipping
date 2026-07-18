@@ -48,6 +48,29 @@
       position: sticky;
       top: 20px;
       align-self: start;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .right-column-wrapper::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .right-column-wrapper::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (max-width: 900px) {
@@ -337,6 +360,25 @@
             </div>
           </div>
 
+          <!-- Sellos de Confianza (CRO) -->
+          <div class="trust-badges-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0.5rem 0 1rem 0; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1.5px dashed #cbd5e1; text-align: center;">
+            <div>
+              <span style="font-size: 1.35rem;">🚚</span>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #0f172a; margin-top: 2px;">Envío Gratis</div>
+              <div style="font-size: 0.62rem; color: #64748b;">Pagas al recibir</div>
+            </div>
+            <div>
+              <span style="font-size: 1.35rem;">🛡️</span>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #0f172a; margin-top: 2px;">Garantía 100%</div>
+              <div style="font-size: 0.62rem; color: #64748b;">De satisfacción</div>
+            </div>
+            <div>
+              <span style="font-size: 1.35rem;">⭐</span>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #0f172a; margin-top: 2px;">Compra Segura</div>
+              <div style="font-size: 0.62rem; color: #64748b;">Paga al mensajero</div>
+            </div>
+          </div>
+
           <!-- 3. DESCRIPCIÓN PERSUASIVA -->
           <div class="description-container">
             <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a;">
@@ -413,72 +455,74 @@
                 <input type="tel" id="celular" name="celular" placeholder="Ej. 3123456789" pattern="[0-9]{10}" required>
               </div>
 
-              <div class="form-group" style="margin-bottom: 10px;">
-                <label for="departamento">Departamento:</label>
-                <select id="departamento" name="departamento" required>
-                  <option value="">Selecciona tu departamento...</option>
-                </select>
-              </div>
+              <div id="delivery-step" style="display: none; border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 15px; animation: slideDown 0.3s ease-out;">
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label for="departamento">Departamento:</label>
+                  <select id="departamento" name="departamento" required>
+                    <option value="">Selecciona tu departamento...</option>
+                  </select>
+                </div>
 
-              <div class="form-group" style="margin-bottom: 10px;">
-                <label for="ciudad">Municipio / Ciudad:</label>
-                <select id="ciudad" name="ciudad" required disabled>
-                  <option value="">Primero selecciona un departamento...</option>
-                </select>
-              </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label for="ciudad">Municipio / Ciudad:</label>
+                  <select id="ciudad" name="ciudad" required disabled>
+                    <option value="">Primero selecciona un departamento...</option>
+                  </select>
+                </div>
 
-              <div class="form-group" style="margin-bottom: 15px;">
-                <label for="direccion">Dirección de Entrega:</label>
-                <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Barrio El Prado" required>
-              </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                  <label for="direccion">Dirección de Entrega:</label>
+                  <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Barrio El Prado" required>
+                </div>
 
-              <!-- Selector de Cantidad y Ofertas -->
-              <div class="offers-container" style="margin-bottom: 15px;">
-                <h3 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark);">Selecciona tu Oferta:</h3>
-                <div class="offer-option active-offer" id="offer-qty-1" data-qty="1">
-                  <input type="radio" name="oferta" id="opt1" checked>
-                  <label for="opt1">
-                    <strong>1 Unidad</strong>
-                    <span id="offer-price-1">$79.900</span>
-                  </label>
+                <!-- Selector de Cantidad y Ofertas -->
+                <div class="offers-container" style="margin-bottom: 15px;">
+                  <h3 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark);">Selecciona tu Oferta:</h3>
+                  <div class="offer-option active-offer" id="offer-qty-1" data-qty="1">
+                    <input type="radio" name="oferta" id="opt1" checked>
+                    <label for="opt1">
+                      <strong>1 Unidad</strong>
+                      <span id="offer-price-1">$79.900</span>
+                    </label>
+                  </div>
+                  <div class="offer-option" id="offer-qty-2" data-qty="2">
+                    <input type="radio" name="oferta" id="opt2">
+                    <label for="opt2">
+                      <strong>2 Unidades (-20k)</strong>
+                      <span id="offer-price-2">$139.900</span>
+                    </label>
+                  </div>
+                  <div class="offer-option" id="offer-qty-3" data-qty="3">
+                    <input type="radio" name="oferta" id="opt3">
+                    <label for="opt3">
+                      <strong>Paga 2 Lleva 3</strong>
+                      <span id="offer-price-3">$159.900</span>
+                    </label>
+                  </div>
                 </div>
-                <div class="offer-option" id="offer-qty-2" data-qty="2">
-                  <input type="radio" name="oferta" id="opt2">
-                  <label for="opt2">
-                    <strong>2 Unidades (-20k)</strong>
-                    <span id="offer-price-2">$139.900</span>
-                  </label>
-                </div>
-                <div class="offer-option" id="offer-qty-3" data-qty="3">
-                  <input type="radio" name="oferta" id="opt3">
-                  <label for="opt3">
-                    <strong>Paga 2 Lleva 3</strong>
-                    <span id="offer-price-3">$159.900</span>
-                  </label>
-                </div>
-              </div>
 
-              <!-- Resumen de Totales -->
-              <div class="checkout-summary" style="margin-top: 0.75rem; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-                <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
-                  <span>Subtotal:</span>
-                  <span id="summary-subtotal">$79.900 COP</span>
+                <!-- Resumen de Totales -->
+                <div class="checkout-summary" style="margin-top: 0.75rem; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+                  <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
+                    <span>Subtotal:</span>
+                    <span id="summary-subtotal">$79.900 COP</span>
+                  </div>
+                  <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
+                    <span>Envío nacional:</span>
+                    <span class="free-shipping" style="color: #10b981; font-weight: 700;">GRATIS</span>
+                  </div>
+                  <hr style="margin: 6px 0; border: none; border-top: 1px solid var(--border-color);">
+                  <div class="summary-line total-line" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; color: #0f172a;">
+                    <span>Total a pagar:</span>
+                    <span id="summary-total">$79.900 COP</span>
+                  </div>
                 </div>
-                <div class="summary-line" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
-                  <span>Envío nacional:</span>
-                  <span class="free-shipping" style="color: #10b981; font-weight: 700;">GRATIS</span>
-                </div>
-                <hr style="margin: 6px 0; border: none; border-top: 1px solid var(--border-color);">
-                <div class="summary-line total-line" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1rem; color: #0f172a;">
-                  <span>Total a pagar:</span>
-                  <span id="summary-total">$79.900 COP</span>
-                </div>
-              </div>
 
-              <!-- Botón de Envío -->
-              <button type="submit" class="btn-submit-checkout" id="submit-btn" style="margin-top: 0.25rem; width: 100%; font-size: 1rem; padding: 12px;">
-                🟢 PEDIR CONTRAENTREGA
-              </button>
+                <!-- Botón de Envío -->
+                <button type="submit" class="btn-submit-checkout" id="submit-btn" style="margin-top: 0.25rem; width: 100%; font-size: 1rem; padding: 12px;">
+                  🟢 PEDIR CONTRAENTREGA
+                </button>
+              </div>
             </form>
 
             <!-- Pantalla de Éxito Oculta -->

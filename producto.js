@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   inicializarUbicaciones();
+  inicializarPasoFormulario();
   cargarDatosProducto();
 });
 
@@ -405,4 +406,33 @@ function inicializarPixel() {
       currency: 'COP'
     });
   }
+}
+
+// Lógica de Formulario Progresivo (Paso a Paso)
+function inicializarPasoFormulario() {
+  const nombreInput = document.getElementById('nombre');
+  const celularInput = document.getElementById('celular');
+  const deliveryStep = document.getElementById('delivery-step');
+
+  function verificarPaso1() {
+    const nombreValido = nombreInput.value.trim().length >= 3;
+    const celularValido = /^[0-9]{10}$/.test(celularInput.value.trim());
+
+    if (nombreValido && celularValido) {
+      if (deliveryStep.style.display !== 'block') {
+        deliveryStep.style.display = 'block';
+      }
+    } else {
+      // Si borran o dejan inválido el paso 1, y no han modificado los campos del paso 2, podemos ocultarlo
+      const deptoValido = document.getElementById('departamento').value !== "";
+      const direccionValida = document.getElementById('direccion').value.trim() !== "";
+      
+      if (!deptoValido && !direccionValida) {
+        deliveryStep.style.display = 'none';
+      }
+    }
+  }
+
+  nombreInput.addEventListener('input', verificarPaso1);
+  celularInput.addEventListener('input', verificarPaso1);
 }
