@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto Estrella - Tienda de Pruebas</title>
+  <link rel="stylesheet" href="/style.css">
+  
+  <!-- Fuente Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Script del Píxel de Meta (Cargar dinámicamente o configurar manualmente) -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    
+    // Si tienes tu ID de Pixel, configúralo aquí o déjalo dinámico
+    const PIXEL_ID = "TU_PIXEL_ID_AQUÍ"; 
+    if (PIXEL_ID && PIXEL_ID !== "TU_PIXEL_ID_AQUÍ") {
+      fbq('init', PIXEL_ID);
+      fbq('track', 'PageView');
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Banner de Urgencia -->
+  <div class="top-bar">
+    ⚡ ¡OFERTA EXCLUSIVA! Envío Gratis y Pago Contra Entrega en Toda Colombia ⚡
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo">ECOMMERCE<span>EXPRESS</span></div>
+      <a href="#checkout-section" class="btn-primary-header">COMPRAR AHORA</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <!-- Carrusel / Galería de Imágenes -->
+        <div class="product-gallery">
+          <div class="badge-discount">🔥 -40% DTO. SÓLO HOY</div>
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" alt="Producto Principal" id="main-product-img">
+          <div class="gallery-thumbnails">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=150" class="active-thumb" onclick="changeImage(this)">
+            <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=150" onclick="changeImage(this)">
+            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=150" onclick="changeImage(this)">
+          </div>
+        </div>
+
+        <!-- Información de Venta Rápida -->
+        <div class="product-info">
+          <span class="category-tag">LO MÁS VENDIDO EN COLOMBIA</span>
+          <h1>Tenis Deportivos UltraComfort Pro</h1>
+          <div class="rating">
+            ⭐⭐⭐⭐⭐ <span class="rating-text">(148 valoraciones de clientes)</span>
+          </div>
+
+          <div class="prices">
+            <span class="old-price">$135.000 COP</span>
+            <span class="current-price">$79.900 COP</span>
+          </div>
+
+          <p class="product-description">
+            Experimenta el siguiente nivel de comodidad diaria. Diseñados con tecnología ergonómica que absorbe los impactos, ideales para trotar, ir al gimnasio o usar en tu día a día con total confort.
+          </p>
+
+          <!-- Tarjetas de Garantía COD -->
+          <div class="features-list">
+            <div class="feature-item">
+              <span class="icon">📦</span>
+              <div>
+                <strong>Envío Gratis a Domicilio</strong>
+                <p>No pagas nada extra por el flete.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="icon">🤝</span>
+              <div>
+                <strong>Pago Contra Entrega</strong>
+                <p>Pagas en efectivo al recibir el paquete en tu casa.</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="#checkout-section" class="btn-ctaPulse">PEDIR Y PAGAR EN CASA</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beneficios del Producto -->
+    <section class="benefits-section">
+      <h2>¿Por qué elegir UltraComfort Pro?</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">☁️</div>
+          <h3>Suela Anti-Impacto</h3>
+          <p>Reduce la presión en rodillas y articulaciones al caminar o correr.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🌬️</div>
+          <h3>Material Transpirable</h3>
+          <p>Mantiene tus pies frescos, secos y libres de malos olores todo el día.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">💪</div>
+          <h3>Alta Durabilidad</h3>
+          <p>Suela reforzada antideslizante de larga duración para cualquier terreno.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Formulario de Checkout / Landing -->
+    <section class="checkout-section" id="checkout-section">
+      <div class="checkout-container">
+        <div class="checkout-header">
+          <h2>🛒 FORMULARIO DE COMPRA RÁPIDA</h2>
+          <p>Llena tus datos a continuación para procesar tu orden. Paga en efectivo al recibir.</p>
+        </div>
+
+        <form id="checkout-form">
+          <!-- Datos del Pedido -->
+          <div class="form-group">
+            <label for="nombre">Nombre Completo (Quien recibe):</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+          </div>
+
+          <div class="form-group">
+            <label for="celular">Número de Celular (10 dígitos):</label>
+            <input type="tel" id="celular" name="celular" placeholder="Ej. 3123456789" pattern="[0-9]{10}" required>
+            <small>Te llamaremos para confirmar la dirección antes de enviar.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="departamento">Departamento:</label>
+            <select id="departamento" name="departamento" required>
+              <option value="">Selecciona tu departamento...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ciudad">Municipio / Ciudad:</label>
+            <select id="ciudad" name="ciudad" required disabled>
+              <option value="">Primero selecciona un departamento...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="direccion">Dirección Completa (Casa, Apto, Barrio):</label>
+            <input type="text" id="direccion" name="direccion" placeholder="Ej. Calle 45 # 12-34 Apto 302, Barrio El Prado" required>
+          </div>
+
+          <!-- Selector de Cantidad y Ofertas -->
+          <div class="offers-container">
+            <h3>Selecciona tu Oferta Exclusiva:</h3>
+            <div class="offer-option active-offer" data-qty="1" data-price="79900">
+              <input type="radio" name="oferta" id="opt1" checked>
+              <label for="opt1">
+                <strong>Llevar 1 Par</strong>
+                <span>$79.900 COP</span>
+              </label>
+            </div>
+            <div class="offer-option" data-qty="2" data-price="129900">
+              <input type="radio" name="oferta" id="opt2">
+              <label for="opt2">
+                <strong>Llevar 2 Pares (Ahorras 20k)</strong>
+                <span class="badge-saving">¡Más Vendido!</span>
+                <span>$129.900 COP</span>
+              </label>
+            </div>
+            <div class="offer-option" data-qty="3" data-price="179900">
+              <input type="radio" name="oferta" id="opt3">
+              <label for="opt3">
+                <strong>Llevar 3 Pares (Paga 2 y Lleva 3)</strong>
+                <span>$179.900 COP</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Resumen de Totales -->
+          <div class="checkout-summary">
+            <div class="summary-line">
+              <span>Subtotal:</span>
+              <span id="summary-subtotal">$79.900 COP</span>
+            </div>
+            <div class="summary-line">
+              <span>Envío nacional:</span>
+              <span class="free-shipping">GRATIS</span>
+            </div>
+            <hr>
+            <div class="summary-line total-line">
+              <span>Total a pagar en casa:</span>
+              <span id="summary-total">$79.900 COP</span>
+            </div>
+          </div>
+
+          <!-- Botón de Acción -->
+          <button type="submit" class="btn-submit-checkout" id="submit-btn">
+            🟢 CONFIRMAR PEDIDO CONTRAENTREGA
+          </button>
+        </form>
+
+        <!-- Pantalla de Éxito Oculta -->
+        <div id="success-screen" class="success-screen hidden">
+          <div class="success-icon">✅</div>
+          <h2>¡Pedido Recibido con Éxito!</h2>
+          <p>Gracias por tu compra, <strong id="success-client-name"></strong>.</p>
+          <div class="order-id-box">Código de Pedido: <span id="success-order-id"></span></div>
+          <p class="success-info">
+            Tu pedido está siendo procesado. Te contactaremos vía llamada o WhatsApp al número <strong id="success-client-phone"></strong> para validar tu dirección antes de realizar el despacho.
+          </p>
+          <button onclick="resetCheckout()" class="btn-secondary-success">Realizar otra compra</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Testimonios de clientes en Colombia -->
+    <section class="reviews-section">
+      <h2>Opiniones de Nuestros Clientes</h2>
+      <div class="reviews-container">
+        <div class="review-card">
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+          <p>"Llegaron super rápido a Cali, en 3 días. Los tenis son muy livianos y cómodos. Pagué cuando me los entregó Servientrega. Muy recomendado."</p>
+          <strong>- Carlos M. (Cali)</strong>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+          <p>"Excelente servicio. Me llamaron para confirmar la dirección y me llegaron al día siguiente en Bogotá. La suela es muy suave para caminar."</p>
+          <strong>- Andrea S. (Bogotá)</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 ECOMMERCE EXPRESS. Todos los derechos reservados.</p>
+    <p>Desarrollado con fines demostrativos para venta de dropshipping local.</p>
+  </footer>
+
+  <script src="/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "custom-dropshipping-store",
+  "version": "1.0.0",
+  "description": "Tienda de dropshipping personalizada a código con backend serverless e integración de Meta Ads y Dropi.",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.42.0"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0"
+  }
+}
