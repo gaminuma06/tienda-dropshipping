@@ -379,6 +379,10 @@ function configurarEnvioFormulario() {
         if (checkoutHeader) {
           checkoutHeader.classList.add('hidden');
         }
+        const productInfo = document.querySelector('.checkout-product-info');
+        if (productInfo) {
+          productInfo.classList.add('hidden');
+        }
         successScreen.classList.remove('hidden');
 
         document.getElementById('checkout-form-section').scrollIntoView({ behavior: 'smooth' });
