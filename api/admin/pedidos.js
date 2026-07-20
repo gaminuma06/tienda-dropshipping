@@ -193,7 +193,7 @@ export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,POST');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,POST,DELETE');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
@@ -329,6 +329,27 @@ export default async function handler(req, res) {
           error: syncErr.message
         });
       }
+    }
+
+    // 4. Eliminar un pedido (DELETE)
+    if (req.method === 'DELETE') {
+      const { id: deleteId } = req.query;
+
+      if (!deleteId) {
+        return res.status(400).json({ success: false, error: 'Falta el ID del pedido a eliminar' });
+      }
+
+      const { error } = await supabase
+        .from('pedidos')
+        .delete()
+        .eq('id', deleteId);
+
+      if (error) throw error;
+
+      return res.status(200).json({
+        success: true,
+        message: 'Pedido eliminado exitosamente'
+      });
     }
 
     return res.status(405).json({ success: false, error: 'Método no permitido' });

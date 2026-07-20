@@ -288,9 +288,12 @@ function renderPedidos(pedidos) {
           </select>
         </td>
         <td>
-          ${p.dropi_status !== 'Enviado' ? `
-            <button class="action-btn btn-sync" onclick="reintentarLogistica(${p.id}, '${p.proveedor_logistico || 'Dropi'}')">🔄 Reintentar ${p.proveedor_logistico || 'Dropi'}</button>
-          ` : '<span style="color:var(--accent)">✓ Integrado</span>'}
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            ${p.dropi_status !== 'Enviado' ? `
+              <button class="action-btn btn-sync" onclick="reintentarLogistica(${p.id}, '${p.proveedor_logistico || 'Dropi'}')">🔄 Reintentar ${p.proveedor_logistico || 'Dropi'}</button>
+            ` : '<span style="color:var(--accent); text-align: center; display: block; margin-bottom: 2px;">✓ Integrado</span>'}
+            <button class="action-btn" style="background:var(--danger); color:white;" onclick="eliminarPedido(${p.id})">🗑️ Borrar</button>
+          </div>
         </td>
       </tr>
     `;
@@ -345,6 +348,31 @@ window.reintentarLogistica = async function(id, proveedor = 'Dropi') {
   } catch (err) {
     console.error(`Error al reintentar ${proveedor}:`, err);
     alert('Error de conexión con el servidor backend.');
+  }
+}
+
+// Eliminar un pedido definitivamente de la base de datos
+window.eliminarPedido = async function(id) {
+  if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el pedido #${id}?\nEsta acción no se puede deshacer.`)) return;
+
+  try {
+    const response = await fetch(`/api/admin/pedidos?id=${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert('Pedido eliminado correctamente.');
+      cargarPedidos();
+    } else {
+      alert('Error al eliminar pedido: ' + data.error);
+    }
+  } catch (err) {
+    console.error('Error al borrar pedido:', err);
+    alert('Error de conexión al servidor backend.');
   }
 }
 
