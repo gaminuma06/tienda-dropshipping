@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
       showAuth();
     }
   }
+
+  // Listener para cambiar ayuda dinámica de proveedor logístico
+  prodProveedor.addEventListener('change', actualizarAyudaProveedor);
 });
 
 // Manejo de la autenticación
@@ -442,6 +445,7 @@ window.abrirModalProducto = function() {
   modalTitle.innerText = "Agregar Nuevo Producto";
   productoForm.reset();
   prodId.value = '';
+  actualizarAyudaProveedor();
   productoModal.style.display = 'flex';
 }
 
@@ -468,6 +472,7 @@ window.editarProducto = function(product) {
   prodBeneficios.value = product.beneficios ? JSON.stringify(product.beneficios, null, 2) : '';
   prodTestimonios.value = product.testimonios ? JSON.stringify(product.testimonios, null, 2) : '';
   
+  actualizarAyudaProveedor();
   productoModal.style.display = 'flex';
 }
 
@@ -568,5 +573,73 @@ window.eliminarProducto = async function(id) {
     }
   } catch (err) {
     console.error('Error al borrar producto:', err);
+  }
+}
+
+// Función dinámica de ayuda para los proveedores en el formulario
+function actualizarAyudaProveedor() {
+  const proveedor = prodProveedor.value;
+  const helpText = document.getElementById('proveedor-help-text');
+  const lblDropiId = document.getElementById('lbl-dropi-id');
+
+  if (!helpText || !lblDropiId) return;
+
+  if (proveedor === 'Effi') {
+    helpText.innerHTML = '💡 <strong>Nota para Effi Systems:</strong> El SKU del producto debe coincidir exactamente con el SKU del artículo en tu ERP de Effi. El campo "ID de Producto en Plataforma" no es obligatorio para Effi y puede quedar vacío.';
+    helpText.style.display = 'block';
+    helpText.style.color = '#10b981';
+    helpText.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+    helpText.style.background = 'rgba(16, 185, 129, 0.1)';
+    lblDropiId.innerText = 'ID de Producto en Effi (Opcional)';
+  } else if (proveedor === 'Hoko') {
+    helpText.innerHTML = '💡 <strong>Nota para Hoko Logística:</strong> El SKU del producto debe coincidir con la Referencia asignada en el catálogo de Hoko. El campo "ID de Producto en Plataforma" puede quedar vacío.';
+    helpText.style.display = 'block';
+    helpText.style.color = '#3b82f6';
+    helpText.style.borderColor = 'rgba(59, 130, 246, 0.2)';
+    helpText.style.background = 'rgba(59, 130, 246, 0.1)';
+    lblDropiId.innerText = 'ID de Producto en Hoko (Opcional)';
+  } else {
+    helpText.innerHTML = '💡 <strong>Nota para Dropi:</strong> El ID de Producto en Plataforma es <strong>obligatorio</strong> y debe corresponder al ID numérico asignado por Dropi para ese producto.';
+    helpText.style.display = 'block';
+    helpText.style.color = '#f59e0b';
+    helpText.style.borderColor = 'rgba(245, 158, 11, 0.2)';
+    helpText.style.background = 'rgba(245, 158, 11, 0.1)';
+    lblDropiId.innerText = 'ID de Producto en Dropi *';
+  }
+}
+
+// Función global para testear la comunicación de la API de Effi
+window.testConexionEffi = async function() {
+  if (!authToken) return;
+
+  const btn = document.getElementById('btn-test-effi');
+  if (!btn) return;
+
+  const oldText = btn.innerText;
+  btn.disabled = true;
+  btn.innerText = '⏳ Conectando...';
+
+  try {
+    const response = await fetch('/api/admin/test-effi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert('✅ CONEXIÓN EXITOSA CON EFFI SYSTEMS:\n\n' + data.message);
+    } else {
+      alert('❌ ERROR DE CONEXIÓN CON EFFI SYSTEMS:\n\n' + data.error + (data.details ? '\n\nDetalles: ' + JSON.stringify(data.details) : ''));
+    }
+  } catch (err) {
+    console.error('Error testeando conexión con Effi:', err);
+    alert('❌ Error de red al intentar comunicarse con el servidor de la tienda.');
+  } finally {
+    btn.disabled = false;
+    btn.innerText = oldText;
   }
 }

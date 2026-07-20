@@ -461,6 +461,7 @@
         <p>Control de pedidos y productos en tiempo real integrado con Dropi</p>
       </div>
       <div class="header-actions">
+        <button class="btn-secondary" id="btn-test-effi" onclick="testConexionEffi()" style="border-color: var(--accent); color: var(--accent); font-weight: 700;">⚡ Probar Conexión Effi</button>
         <button class="btn-secondary" onclick="logout()">Cerrar Sesión</button>
       </div>
     </header>
@@ -606,9 +607,13 @@
             </select>
           </div>
           <div class="col form-group">
-            <label for="prod-dropi-id">ID de Producto en Plataforma</label>
+            <label for="prod-dropi-id" id="lbl-dropi-id">ID de Producto en Plataforma</label>
             <input type="text" id="prod-dropi-id" class="form-control" placeholder="Ej. 84725">
           </div>
+        </div>
+
+        <div id="proveedor-help-text" style="font-size: 0.825rem; color: #10b981; margin: -10px 0 15px 0; background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.2); display: none;">
+          💡 Nota para Effi: El SKU ingresado arriba debe coincidir exactamente con el SKU del artículo en tu ERP de Effi. El campo ID de Producto en Plataforma no es obligatorio para Effi.
         </div>
 
         <div class="form-group">
