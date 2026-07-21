@@ -200,10 +200,17 @@ window.switchTab = function(tabId, btnElement) {
   document.querySelectorAll('.tab-nav .tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-
-  // Activar actual
+  
+  // Activar pestaña seleccionada
   document.getElementById(tabId).classList.add('active');
+  
+  // Activar botón seleccionado
   btnElement.classList.add('active');
+
+  // Si entra al espía, cargar anuncios
+  if (tabId === 'espia-tab') {
+    cargarAnunciosEspia();
+  }
 }
 
 // ==========================================
@@ -671,3 +678,160 @@ window.testConexionEffi = async function() {
     btn.innerText = oldText;
   }
 }
+
+// Cargar anuncios ganadores desde la API de Supabase
+window.cargarAnunciosEspia = async function() {
+  if (!authToken) return;
+
+  const container = document.getElementById('espia-cards-container');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 4rem;">
+      <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem; animation: spin 1s infinite linear;">🔄</span>
+      <p>Consultando base de datos de anuncios ganadores...</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch('/api/admin/espia', {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    if (response.status === 401) return logout();
+    const data = await response.json();
+
+    if (data.success) {
+      renderAnunciosEspia(data.anuncios);
+    } else {
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--danger); padding: 4rem;">
+          <p>❌ Error al cargar anuncios: ${data.error}</p>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error('Error cargando anuncios espía:', err);
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--danger); padding: 4rem;">
+        <p>❌ Error de red al intentar conectar con el servidor.</p>
+      </div>
+    `;
+  }
+}
+
+function renderAnunciosEspia(anuncios) {
+  const container = document.getElementById('espia-cards-container');
+  if (!container) return;
+
+  if (!anuncios || anuncios.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 4rem 2rem; background: var(--bg-card); border-radius: 12px; border: 1px dashed var(--border-card);">
+        <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;">📭</span>
+        <p>No hay anuncios ganadores registrados en Supabase.</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Ejecuta el script <code>npm run spy</code> localmente para poblar la base de datos.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = anuncios.map(ad => {
+    // Etiqueta de calor según días activos
+    let badgeClass = '';
+    if (ad.days_active >= 30) badgeClass = 'muy-activo';
+
+    const fechaFormateada = new Date(ad.start_date).toLocaleDateString('es-CO', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+
+    // Color del badge de competencia
+    let compColor = '#34d399'; // Verde
+    let compBg = 'rgba(16, 185, 129, 0.15)';
+    if (ad.competencia === 'Alta') {
+      compColor = '#f87171'; // Rojo
+      compBg = 'rgba(239, 68, 68, 0.15)';
+    } else if (ad.competencia === 'Media') {
+      compColor = '#fbbf24'; // Amarillo
+      compBg = 'rgba(245, 158, 11, 0.15)';
+    }
+
+    return `
+      <div class="espia-card">
+        <div class="espia-card-header">
+          <div>
+            <h3>${ad.page_name}</h3>
+            <p>Inició: ${fechaFormateada}</p>
+          </div>
+          <span class="espia-badge-duration ${badgeClass}">
+            🔥 ${ad.days_active} días activo
+          </span>
+        </div>
+
+        <div class="espia-card-body">
+          <!-- Copy Original -->
+          <div>
+            <div class="espia-section-title">📝 Copy Original</div>
+            <div class="espia-box">${ad.copy_text.replace(/\n/g, '<br>')}</div>
+          </div>
+
+          <!-- Análisis de Viabilidad -->
+          <div class="espia-analysis-grid">
+            <div class="analysis-item">
+              <strong>📊 Competencia</strong>
+              <span class="badge" style="background:${compBg}; color:${compColor}; font-size:0.7rem; padding:1px 6px;">
+                ${ad.competencia}
+              </span>
+            </div>
+            <div class="analysis-item">
+              <strong>💡 Diagnóstico</strong>
+              <small style="color:var(--text-muted); font-size:0.75rem;">${ad.diagnostico_copy || 'Analizado'}</small>
+            </div>
+          </div>
+
+          <!-- Recomendación / Oportunidad -->
+          <div>
+            <div class="espia-section-title">🚀 Cómo sacarle partido</div>
+            <div class="espia-box" style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.15); font-size: 0.8rem;">
+              ${ad.oportunidad || 'N/A'}
+            </div>
+          </div>
+
+          <!-- Copy Optimizado Propuesto -->
+          <div class="copy-mejorado-container">
+            <div class="espia-section-title">🎯 Copy Recomendado (Mejorado)</div>
+            <button class="btn-copiar" onclick="copiarTexto('copy-propuesto-${ad.id}')">📋 Copiar</button>
+            <div class="espia-box" id="copy-propuesto-${ad.id}" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.15); font-size: 0.8rem; font-family: monospace; white-space: pre-wrap;">${ad.copy_mejorado || 'N/A'}</div>
+          </div>
+        </div>
+
+        <div class="espia-card-footer">
+          <img src="${ad.creative_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-card);">
+          <a href="${ad.ad_link}" target="_blank" class="action-btn btn-edit" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem;">
+            🔗 Ver Anuncio en Meta
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Copiar texto al portapapeles de forma amigable
+window.copiarTexto = function(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  // Extraer el texto limpio (deshacer el HTML si hay)
+  const text = el.innerText;
+
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✅ Copy copiado al portapapeles correctamente.');
+  }).catch(err => {
+    console.error('Error al copiar:', err);
+    alert('❌ No se pudo copiar automáticamente. Por favor selecciónalo manualmente.');
+  });
+}
+
