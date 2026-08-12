@@ -73,107 +73,6 @@ async function sendOrderToDropi(orderData) {
   return { success: true, guideNumber: String(guideNumber || ''), data: orderResult };
 }
 
-// ---------------------------------------------------------
-// 2. INTEGRACIÓN CON EFFI
-// ---------------------------------------------------------
-async function sendOrderToEffi(orderData) {
-  const effiApiUrl = process.env.EFFI_API_URL || 'https://api.effisystems.com';
-  const effiApiKey = process.env.EFFI_API_KEY;
-  const effiToken = process.env.EFFI_TOKEN;
-  
-  if (!effiApiKey || !effiToken || effiApiKey.includes('tu-api-key')) {
-    throw new Error('Credenciales de Effi no configuradas en las variables de entorno.');
-  }
-  
-  const effiPayload = {
-    apiKey: effiApiKey,
-    token: effiToken,
-    pedido: {
-      nombre_cliente: orderData.nombre.trim(),
-      celular_cliente: orderData.celular.trim(),
-      direccion_entrega: orderData.direccion.trim(),
-      ciudad_destinatario: orderData.ciudad.toUpperCase(),
-      departamento_destinatario: orderData.departamento.toUpperCase(),
-      tipo_despacho: "CONTRAENTREGA",
-      productos: orderData.productos.map(p => ({
-        sku: p.sku || 'SKU-DEFECTO',
-        cantidad: p.cantidad || 1,
-        valor_venta: p.precio || 79900
-      }))
-    }
-  };
-
-  const response = await fetch(`${effiApiUrl}/pedidos/crear`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${effiToken}`
-    },
-    body: JSON.stringify(effiPayload)
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`API de Effi respondió con error: ${errText}`);
-  }
-
-  const result = await response.json();
-  const guideNumber = result.guia || result.id_guia || (result.data && result.data.guia) || result.numero_pedido;
-  
-  return { success: true, guideNumber: String(guideNumber || ''), data: result };
-}
-
-// ---------------------------------------------------------
-// 3. INTEGRACIÓN CON HOKO
-// ---------------------------------------------------------
-async function sendOrderToHoko(orderData) {
-  const hokoApiUrl = process.env.HOKO_API_URL || 'https://api.hoko.com.co';
-  const hokoApiKey = process.env.HOKO_API_KEY;
-  
-  if (!hokoApiKey || hokoApiKey.includes('tu-api-key')) {
-    throw new Error('Credenciales de Hoko no configuradas en las variables de entorno.');
-  }
-  
-  const hokoPayload = {
-    cliente: {
-      nombre: orderData.nombre.trim(),
-      celular: orderData.celular.trim(),
-      direccion: orderData.direccion.trim(),
-      ciudad: orderData.ciudad.toUpperCase(),
-      departamento: orderData.departamento.toUpperCase(),
-      pais: "COLOMBIA"
-    },
-    orden: {
-      metodo_pago: "contraentrega",
-      detalles_envio: "Envio gratis",
-      productos: orderData.productos.map(p => ({
-        referencia_sku: p.sku || 'SKU-DEFECTO',
-        unidades: p.cantidad || 1,
-        precio_unidad: p.precio || 79900
-      }))
-    }
-  };
-
-  const response = await fetch(`${hokoApiUrl}/orders/create`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': hokoApiKey
-    },
-    body: JSON.stringify(hokoPayload)
-  });
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`API de Hoko respondió con error: ${errText}`);
-  }
-
-  const result = await response.json();
-  const guideNumber = result.numero_guia || (result.data && result.data.guia) || result.id_orden;
-  
-  return { success: true, guideNumber: String(guideNumber || ''), data: result };
-}
-
 async function checkAuth(req) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return false;
@@ -269,7 +168,6 @@ export default async function handler(req, res) {
 
       const pedido = dbData[0];
       const productos = pedido.productos_json || [];
-      const proveedorLogistico = pedido.proveedor_logistico || 'Dropi';
 
       if (productos.length === 0) {
         return res.status(400).json({ success: false, error: 'El pedido no tiene productos cargados en formato JSON' });
@@ -285,15 +183,7 @@ export default async function handler(req, res) {
       };
 
       try {
-        let integrationResponse = { success: false, error: 'Proveedor no soportado' };
-        
-        if (proveedorLogistico === 'Dropi') {
-          integrationResponse = await sendOrderToDropi(orderPayload);
-        } else if (proveedorLogistico === 'Effi') {
-          integrationResponse = await sendOrderToEffi(orderPayload);
-        } else if (proveedorLogistico === 'Hoko') {
-          integrationResponse = await sendOrderToHoko(orderPayload);
-        }
+        const integrationResponse = await sendOrderToDropi(orderPayload);
 
         if (integrationResponse.success) {
           const guideNumber = integrationResponse.guideNumber;

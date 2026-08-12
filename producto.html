@@ -287,6 +287,72 @@
       margin-bottom: 0.5rem;
     }
 
+    /* Barra flotante de compra (solo móvil) */
+    .mobile-buy-bar {
+      display: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      box-shadow: 0 -6px 20px rgba(0,0,0,0.12);
+      padding: 10px 14px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+    }
+
+    .mobile-buy-bar.visible {
+      transform: translateY(0);
+    }
+
+    .mobile-buy-bar-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+      overflow: hidden;
+    }
+
+    .mobile-buy-bar-price {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--danger);
+      white-space: nowrap;
+    }
+
+    .mobile-buy-bar-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .mobile-buy-bar-btn {
+      flex-shrink: 0;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .mobile-buy-bar {
+        display: flex;
+      }
+
+      #product-content {
+        padding-bottom: 76px;
+      }
+    }
+
     .badge-discount-float {
       position: absolute;
       top: 1.5rem;
@@ -513,6 +579,15 @@
     <p>© 2026 ECOMMERCE EXPRESS. Todos los derechos reservados.</p>
     <p>Desarrollado con fines de dropshipping local automatizado.</p>
   </footer>
+
+  <!-- Barra flotante de compra (solo móvil, siempre visible cuando el formulario sale de pantalla) -->
+  <div id="mobile-buy-bar" class="mobile-buy-bar">
+    <div class="mobile-buy-bar-info">
+      <span class="mobile-buy-bar-price" id="mobile-buy-bar-price">$0 COP</span>
+      <span class="mobile-buy-bar-label">Pago contraentrega</span>
+    </div>
+    <button type="button" class="mobile-buy-bar-btn" onclick="irAComprar()">🟢 Comprar ahora</button>
+  </div>
 
   <script type="module" src="/producto.js"></script>
 </body>

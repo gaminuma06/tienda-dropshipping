@@ -20,7 +20,6 @@ const prodPrecio = document.getElementById('prod-precio');
 const prodPrecioAntiguo = document.getElementById('prod-precio-antiguo');
 const prodSlug = document.getElementById('prod-slug');
 const prodDropiId = document.getElementById('prod-dropi-id');
-const prodProveedor = document.getElementById('prod-proveedor');
 const prodDescripcion = document.getElementById('prod-descripcion');
 const prodImagenes = document.getElementById('prod-imagenes');
 const prodOpciones = document.getElementById('prod-opciones');
@@ -53,9 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showAuth();
     }
   }
-
-  // Listener para cambiar ayuda dinámica de proveedor logístico
-  prodProveedor.addEventListener('change', actualizarAyudaProveedor);
 });
 
 // Manejo de la autenticación
@@ -211,6 +207,11 @@ window.switchTab = function(tabId, btnElement) {
   if (tabId === 'espia-tab') {
     cargarAnunciosEspia();
   }
+
+  // Si entra al catálogo de Dropi, cargar el catálogo
+  if (tabId === 'dropi-catalogo-tab') {
+    cargarCatalogoDropi(1);
+  }
 }
 
 // ==========================================
@@ -283,7 +284,7 @@ function renderPedidos(pedidos) {
         <td><strong>${totalFormateado}</strong></td>
         <td>
           ${p.id_guia_dropi || '<span style="color:var(--text-muted)">-</span>'}
-          <br><small style="color:var(--text-muted)">(${p.proveedor_logistico || 'Dropi'})</small>
+          <br><small style="color:var(--text-muted)">(Dropi)</small>
         </td>
         <td><span class="badge ${dropiBadge}">${p.dropi_status || 'Pendiente'}</span></td>
         <td>
@@ -297,7 +298,7 @@ function renderPedidos(pedidos) {
         <td>
           <div style="display: flex; flex-direction: column; gap: 4px;">
             ${p.dropi_status !== 'Enviado' ? `
-              <button class="action-btn btn-sync" onclick="reintentarLogistica(${p.id}, '${p.proveedor_logistico || 'Dropi'}')">🔄 Reintentar ${p.proveedor_logistico || 'Dropi'}</button>
+              <button class="action-btn btn-sync" onclick="reintentarLogistica(${p.id})">🔄 Reintentar Dropi</button>
             ` : '<span style="color:var(--accent); text-align: center; display: block; margin-bottom: 2px;">✓ Integrado</span>'}
             <button class="action-btn" style="background:var(--danger); color:white;" onclick="eliminarPedido(${p.id})">🗑️ Borrar</button>
           </div>
@@ -330,10 +331,10 @@ window.cambiarEstadoPedido = async function(id, nuevoEstado) {
   }
 }
 
-// Reintentar conexión con la API logística para un pedido fallido
-window.reintentarLogistica = async function(id, proveedor = 'Dropi') {
-  if (!confirm(`¿Deseas reenviar este pedido a ${proveedor}?`)) return;
-  
+// Reintentar conexión con Dropi para un pedido fallido
+window.reintentarLogistica = async function(id) {
+  if (!confirm('¿Deseas reenviar este pedido a Dropi?')) return;
+
   try {
     const response = await fetch('/api/admin/pedidos', {
       method: 'POST',
@@ -346,14 +347,14 @@ window.reintentarLogistica = async function(id, proveedor = 'Dropi') {
 
     const data = await response.json();
     if (data.success) {
-      alert(`Pedido enviado a ${proveedor} con éxito. Guía generada: ` + data.guideNumber);
+      alert('Pedido enviado a Dropi con éxito. Guía generada: ' + data.guideNumber);
       cargarPedidos();
     } else {
-      alert(`Fallo de integración con ${proveedor}: ` + data.error);
+      alert('Fallo de integración con Dropi: ' + data.error);
       cargarPedidos();
     }
   } catch (err) {
-    console.error(`Error al reintentar ${proveedor}:`, err);
+    console.error('Error al reintentar Dropi:', err);
     alert('Error de conexión con el servidor backend.');
   }
 }
@@ -480,7 +481,6 @@ window.abrirModalProducto = function() {
   modalTitle.innerText = "Agregar Nuevo Producto";
   productoForm.reset();
   prodId.value = '';
-  actualizarAyudaProveedor();
   productoModal.style.display = 'flex';
 }
 
@@ -497,17 +497,15 @@ window.editarProducto = function(product) {
   prodPrecio.value = product.precio;
   prodPrecioAntiguo.value = product.precio_antiguo || '';
   prodSlug.value = product.slug;
-  prodProveedor.value = product.proveedor || 'Dropi';
   prodDropiId.value = product.dropi_id || '';
   prodDescripcion.value = product.descripcion || '';
   prodImagenes.value = product.imagenes.join('\n');
   prodOpciones.value = product.opciones ? product.opciones.join(', ') : '';
   prodActivo.checked = product.activo;
-  
+
   prodBeneficios.value = product.beneficios ? JSON.stringify(product.beneficios, null, 2) : '';
   prodTestimonios.value = product.testimonios ? JSON.stringify(product.testimonios, null, 2) : '';
-  
-  actualizarAyudaProveedor();
+
   productoModal.style.display = 'flex';
 }
 
@@ -548,7 +546,7 @@ productoForm.addEventListener('submit', async (e) => {
     precio: parseFloat(prodPrecio.value),
     precio_antiguo: prodPrecioAntiguo.value ? parseFloat(prodPrecioAntiguo.value) : null,
     slug: prodSlug.value,
-    proveedor: prodProveedor.value,
+    proveedor: 'Dropi',
     dropi_id: prodDropiId.value || null,
     descripcion: prodDescripcion.value,
     imagenes: imagenesArray,
@@ -611,72 +609,198 @@ window.eliminarProducto = async function(id) {
   }
 }
 
-// Función dinámica de ayuda para los proveedores en el formulario
-function actualizarAyudaProveedor() {
-  const proveedor = prodProveedor.value;
-  const helpText = document.getElementById('proveedor-help-text');
-  const lblDropiId = document.getElementById('lbl-dropi-id');
+// ==========================================
+// SECCIÓN DE CATÁLOGO DROPI
+// ==========================================
+let dropiCatalogoPagina = 1;
+let dropiCatalogoProductos = [];
+let dropiSeleccionados = new Map(); // dropi_id -> producto normalizado de Dropi
+let dropiIdsYaImportados = new Set();
 
-  if (!helpText || !lblDropiId) return;
-
-  if (proveedor === 'Effi') {
-    helpText.innerHTML = '💡 <strong>Nota para Effi Systems:</strong> El SKU del producto debe coincidir exactamente con el SKU del artículo en tu ERP de Effi. El campo "ID de Producto en Plataforma" no es obligatorio para Effi y puede quedar vacío.';
-    helpText.style.display = 'block';
-    helpText.style.color = '#10b981';
-    helpText.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-    helpText.style.background = 'rgba(16, 185, 129, 0.1)';
-    lblDropiId.innerText = 'ID de Producto en Effi (Opcional)';
-  } else if (proveedor === 'Hoko') {
-    helpText.innerHTML = '💡 <strong>Nota para Hoko Logística:</strong> El SKU del producto debe coincidir con la Referencia asignada en el catálogo de Hoko. El campo "ID de Producto en Plataforma" puede quedar vacío.';
-    helpText.style.display = 'block';
-    helpText.style.color = '#3b82f6';
-    helpText.style.borderColor = 'rgba(59, 130, 246, 0.2)';
-    helpText.style.background = 'rgba(59, 130, 246, 0.1)';
-    lblDropiId.innerText = 'ID de Producto en Hoko (Opcional)';
-  } else {
-    helpText.innerHTML = '💡 <strong>Nota para Dropi:</strong> El ID de Producto en Plataforma es <strong>obligatorio</strong> y debe corresponder al ID numérico asignado por Dropi para ese producto.';
-    helpText.style.display = 'block';
-    helpText.style.color = '#f59e0b';
-    helpText.style.borderColor = 'rgba(245, 158, 11, 0.2)';
-    helpText.style.background = 'rgba(245, 158, 11, 0.1)';
-    lblDropiId.innerText = 'ID de Producto en Dropi *';
-  }
+function slugify(texto) {
+  return texto
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 }
 
-// Función global para testear la comunicación de la API de Effi
-window.testConexionEffi = async function() {
+window.cargarCatalogoDropi = async function(page) {
   if (!authToken) return;
+  dropiCatalogoPagina = page || 1;
 
-  const btn = document.getElementById('btn-test-effi');
-  if (!btn) return;
+  const grid = document.getElementById('dropi-catalogo-grid');
+  const statusBox = document.getElementById('dropi-catalogo-status');
+  if (!grid) return;
 
-  const oldText = btn.innerText;
-  btn.disabled = true;
-  btn.innerText = '⏳ Conectando...';
+  statusBox.innerHTML = '';
+  grid.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 4rem;">
+      <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;">🔄</span>
+      <p>Consultando catálogo de Dropi...</p>
+    </div>
+  `;
+
+  // Refrescar productos ya importados para poder marcarlos como tal
+  try {
+    const prodResp = await fetch('/api/admin/productos', { headers: { 'Authorization': `Bearer ${authToken}` } });
+    const prodData = await prodResp.json();
+    if (prodData.success) {
+      dropiIdsYaImportados = new Set(prodData.productos.filter(p => p.dropi_id).map(p => String(p.dropi_id)));
+    }
+  } catch (err) {
+    console.error('No se pudo verificar productos ya importados:', err);
+  }
+
+  const search = document.getElementById('dropi-catalogo-search').value.trim();
+  const params = new URLSearchParams({ page: dropiCatalogoPagina, keywords: search });
 
   try {
-    const response = await fetch('/api/admin/test-effi', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      }
+    const response = await fetch(`/api/admin/dropi-catalogo?${params.toString()}`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
     });
 
+    if (response.status === 401) return logout();
     const data = await response.json();
 
     if (data.success) {
-      alert('✅ CONEXIÓN EXITOSA CON EFFI SYSTEMS:\n\n' + data.message);
+      dropiCatalogoProductos = data.productos;
+      renderCatalogoDropi(data.productos);
     } else {
-      alert('❌ ERROR DE CONEXIÓN CON EFFI SYSTEMS:\n\n' + data.error + (data.details ? '\n\nDetalles: ' + JSON.stringify(data.details) : ''));
+      statusBox.innerHTML = `<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.9rem;">❌ ${data.error}</div>`;
+      grid.innerHTML = '';
     }
   } catch (err) {
-    console.error('Error testeando conexión con Effi:', err);
-    alert('❌ Error de red al intentar comunicarse con el servidor de la tienda.');
-  } finally {
-    btn.disabled = false;
-    btn.innerText = oldText;
+    console.error('Error cargando catálogo de Dropi:', err);
+    statusBox.innerHTML = `<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.9rem;">❌ Error de conexión al consultar Dropi.</div>`;
+    grid.innerHTML = '';
   }
+
+  document.getElementById('dropi-catalogo-pagina').innerText = `Página ${dropiCatalogoPagina}`;
+  document.getElementById('btn-dropi-prev').disabled = dropiCatalogoPagina <= 1;
+}
+
+window.cambiarPaginaDropi = function(delta) {
+  const nuevaPagina = dropiCatalogoPagina + delta;
+  if (nuevaPagina < 1) return;
+  cargarCatalogoDropi(nuevaPagina);
+}
+
+function renderCatalogoDropi(productos) {
+  const grid = document.getElementById('dropi-catalogo-grid');
+
+  if (!productos || productos.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 4rem 2rem; background: var(--bg-card); border-radius: 12px; border: 1px dashed var(--border-card);">
+        <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;">📭</span>
+        <p>No se encontraron productos en esta página.</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = productos.map((p, idx) => {
+    const yaImportado = p.dropi_id && dropiIdsYaImportados.has(String(p.dropi_id));
+    const img = (p.imagenes && p.imagenes[0]) || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300';
+    const precioFormateado = p.precio ? `$${p.precio.toLocaleString('es-CO')} COP` : 'Precio no disponible';
+    const marcado = dropiSeleccionados.has(String(p.dropi_id));
+
+    return `
+      <div class="espia-card" style="${yaImportado ? 'opacity: 0.55;' : ''}">
+        <div style="position: relative;">
+          <img src="${img}" style="width:100%; height:160px; object-fit:cover; border-radius: 8px 8px 0 0;">
+          <input type="checkbox" data-idx="${idx}" ${marcado ? 'checked' : ''} ${yaImportado ? 'disabled' : ''}
+            onchange="toggleSeleccionDropi(${idx}, this.checked)"
+            style="position:absolute; top:10px; left:10px; width:20px; height:20px; cursor:pointer;">
+        </div>
+        <div class="espia-card-body" style="padding: 0.9rem;">
+          <h3 style="font-size: 0.95rem; margin-bottom: 0.4rem;">${p.nombre}</h3>
+          <p style="font-weight: 700; color: var(--accent); margin-bottom: 0.3rem;">${precioFormateado}</p>
+          <small style="color: var(--text-muted);">ID Dropi: ${p.dropi_id || 'N/A'}</small>
+          ${yaImportado ? '<div style="margin-top:0.5rem;"><span class="badge badge-success">Ya importado</span></div>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.toggleSeleccionDropi = function(idx, marcado) {
+  const producto = dropiCatalogoProductos[idx];
+  if (!producto) return;
+
+  const key = String(producto.dropi_id || idx);
+  if (marcado) {
+    dropiSeleccionados.set(key, producto);
+  } else {
+    dropiSeleccionados.delete(key);
+  }
+
+  const btn = document.getElementById('btn-importar-dropi');
+  btn.innerText = `Importar seleccionados (${dropiSeleccionados.size})`;
+  btn.disabled = dropiSeleccionados.size === 0;
+}
+
+window.importarSeleccionadosDropi = async function() {
+  if (dropiSeleccionados.size === 0) return;
+
+  const publicarInmediato = document.getElementById('dropi-publicar-inmediato').checked;
+  const btn = document.getElementById('btn-importar-dropi');
+  btn.disabled = true;
+  const totalSeleccionados = dropiSeleccionados.size;
+  let importados = 0, duplicados = 0, fallidos = 0;
+
+  for (const producto of dropiSeleccionados.values()) {
+    const slugBase = slugify(producto.nombre) || 'producto-dropi';
+    const payload = {
+      nombre: producto.nombre,
+      descripcion: producto.descripcion || '',
+      precio: producto.precio || 0,
+      sku: producto.sku ? String(producto.sku).toUpperCase() : `DROPI-${producto.dropi_id}`,
+      dropi_id: producto.dropi_id,
+      proveedor: 'Dropi',
+      imagenes: producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600'],
+      opciones: [],
+      slug: `${slugBase}-${producto.dropi_id}`,
+      beneficios: [],
+      testimonios: [],
+      activo: publicarInmediato
+    };
+
+    try {
+      const response = await fetch('/api/admin/productos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        importados++;
+      } else if (response.status === 409) {
+        duplicados++;
+      } else {
+        fallidos++;
+      }
+    } catch (err) {
+      console.error('Error importando producto de Dropi:', err);
+      fallidos++;
+    }
+  }
+
+  const statusBox = document.getElementById('dropi-catalogo-status');
+  statusBox.innerHTML = `
+    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent); padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.9rem;">
+      ✅ Importación terminada de ${totalSeleccionados} producto(s): <strong>${importados} importados</strong>, ${duplicados} ya existían, ${fallidos} fallidos.
+    </div>
+  `;
+
+  dropiSeleccionados.clear();
+  btn.innerText = 'Importar seleccionados (0)';
+  cargarProductos();
+  cargarCatalogoDropi(dropiCatalogoPagina);
 }
 
 // Cargar anuncios ganadores desde la API de Supabase

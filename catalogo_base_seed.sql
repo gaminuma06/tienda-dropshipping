@@ -71,7 +71,7 @@ INSERT INTO productos (
   149000,
   'SHAVER-PRO-20',
   '91204',
-  'Effi',
+  'Dropi',
   ARRAY[
     'https://images.unsplash.com/photo-1621607512214-68297480165e?q=80&w=600',
     'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=600'
@@ -104,7 +104,7 @@ INSERT INTO productos (
   85000,
   'TRAVEL-BAGS-6P',
   '120473',
-  'Hoko',
+  'Dropi',
   ARRAY[
     'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=600',
     'https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=600'

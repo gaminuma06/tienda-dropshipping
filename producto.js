@@ -59,6 +59,10 @@ const submitBtn = document.getElementById('submit-btn');
 const ofertaSelect = document.getElementById('oferta-select');
 const btnTotalVal = document.getElementById('btn-total-val');
 
+// Barra flotante de compra (móvil)
+const mobileBuyBar = document.getElementById('mobile-buy-bar');
+const mobileBuyBarPrice = document.getElementById('mobile-buy-bar-price');
+
 // Obtener el slug del producto desde la URL (?slug=tenis-deportivos o desde la ruta /p/slug)
 const urlParams = new URLSearchParams(window.location.search);
 let productSlug = urlParams.get('slug');
@@ -200,6 +204,7 @@ function renderizarProducto() {
   // Configurar manejadores de clicks de ofertas
   configurarManejadoresOfertas(price, priceQty2, priceQty3);
   configurarEnvioFormulario();
+  configurarBarraFlotanteMovil();
 }
 
 // Cambiar la imagen grande
@@ -260,6 +265,39 @@ function actualizarResumenPrecios() {
   if (btnTotalVal) {
     btnTotalVal.innerText = totalStr;
   }
+  if (mobileBuyBarPrice) {
+    mobileBuyBarPrice.innerText = `${totalStr} COP`;
+  }
+}
+
+// Muestra la barra flotante de compra en móvil apenas el formulario de compra
+// (que en escritorio queda fijo con position:sticky) sale de la pantalla.
+function configurarBarraFlotanteMovil() {
+  if (!mobileBuyBar || typeof IntersectionObserver === 'undefined') return;
+
+  const checkoutSection = document.getElementById('checkout-form-section');
+  if (!checkoutSection) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      mobileBuyBar.classList.toggle('visible', !entry.isIntersecting);
+    });
+  }, { threshold: 0 });
+
+  observer.observe(checkoutSection);
+}
+
+// Botón de la barra flotante: regresa al formulario de compra y enfoca el primer campo
+window.irAComprar = function () {
+  const checkoutSection = document.getElementById('checkout-form-section');
+  if (!checkoutSection) return;
+
+  checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setTimeout(() => {
+    const nombreInput = document.getElementById('nombre');
+    if (nombreInput) nombreInput.focus();
+  }, 400);
 }
 
 // Inicializar Selectores de Ubicación

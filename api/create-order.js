@@ -86,132 +86,6 @@ async function sendOrderToDropi(orderData) {
 }
 
 // ---------------------------------------------------------
-// 2. INTEGRACIÓN CON EFFI (EFFISYSTEMS ERP)
-// ---------------------------------------------------------
-async function sendOrderToEffi(orderData) {
-  const effiApiUrl = process.env.EFFI_API_URL || 'https://api.effisystems.com';
-  const effiApiKey = process.env.EFFI_API_KEY;
-  const effiToken = process.env.EFFI_TOKEN;
-  
-  // Si las credenciales no están configuradas, simulamos la respuesta y registramos el payload
-  if (!effiApiKey || !effiToken || effiApiKey.includes('tu-api-key')) {
-    console.log('--- SIMULACIÓN EFFI SYSTEMS ---');
-    console.log('Payload que se enviaría a Effi:', JSON.stringify(orderData, null, 2));
-    return { success: false, error: 'Credenciales de Effi no configuradas (Simulación registrada en consola)' };
-  }
-  
-  try {
-    // Estructura típica requerida por la API de Effi para crear remisiones / pedidos
-    const effiPayload = {
-      apiKey: effiApiKey,
-      token: effiToken,
-      pedido: {
-        nombre_cliente: orderData.nombre.trim(),
-        celular_cliente: orderData.celular.trim(),
-        direccion_entrega: orderData.direccion.trim(),
-        ciudad_destinatario: orderData.ciudad.toUpperCase(),
-        departamento_destinatario: orderData.departamento.toUpperCase(),
-        tipo_despacho: "CONTRAENTREGA", // Pago Contra Entrega
-        productos: orderData.productos.map(p => ({
-          sku: p.sku || 'SKU-DEFECTO',
-          cantidad: p.cantidad || 1,
-          valor_venta: p.precio || 79900
-        }))
-      }
-    };
-
-    const response = await fetch(`${effiApiUrl}/pedidos/crear`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${effiToken}`
-      },
-      body: JSON.stringify(effiPayload)
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`API de Effi respondió con error: ${errText}`);
-    }
-
-    const result = await response.json();
-    
-    // Mapeo típico del número de guía o número de orden de Effi
-    const guideNumber = result.guia || result.id_guia || (result.data && result.data.guia) || result.numero_pedido;
-    
-    return {
-      success: true,
-      guideNumber: String(guideNumber || ''),
-      data: result
-    };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-}
-
-// ---------------------------------------------------------
-// 3. INTEGRACIÓN CON HOKO LOGÍSTICA
-// ---------------------------------------------------------
-async function sendOrderToHoko(orderData) {
-  const hokoApiUrl = process.env.HOKO_API_URL || 'https://api.hoko.com.co';
-  const hokoApiKey = process.env.HOKO_API_KEY;
-  
-  if (!hokoApiKey || hokoApiKey.includes('tu-api-key')) {
-    console.log('--- SIMULACIÓN HOKO LOGÍSTICA ---');
-    console.log('Payload que se enviaría a Hoko:', JSON.stringify(orderData, null, 2));
-    return { success: false, error: 'Credenciales de Hoko no configuradas (Simulación registrada en consola)' };
-  }
-  
-  try {
-    // Estructura típica requerida por la API de Hoko
-    const hokoPayload = {
-      cliente: {
-        nombre: orderData.nombre.trim(),
-        celular: orderData.celular.trim(),
-        direccion: orderData.direccion.trim(),
-        ciudad: orderData.ciudad.toUpperCase(),
-        departamento: orderData.departamento.toUpperCase(),
-        pais: "COLOMBIA"
-      },
-      orden: {
-        metodo_pago: "contraentrega",
-        detalles_envio: "Envio gratis",
-        productos: orderData.productos.map(p => ({
-          referencia_sku: p.sku || 'SKU-DEFECTO',
-          unidades: p.cantidad || 1,
-          precio_unidad: p.precio || 79900
-        }))
-      }
-    };
-
-    const response = await fetch(`${hokoApiUrl}/orders/create`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': hokoApiKey
-      },
-      body: JSON.stringify(hokoPayload)
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`API de Hoko respondió con error: ${errText}`);
-    }
-
-    const result = await response.json();
-    const guideNumber = result.numero_guia || (result.data && result.data.guia) || result.id_orden;
-    
-    return {
-      success: true,
-      guideNumber: String(guideNumber || ''),
-      data: result
-    };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-}
-
-// ---------------------------------------------------------
 // MANEJADOR PRINCIPAL DE LA API
 // ---------------------------------------------------------
 export default async function handler(req, res) {
@@ -254,12 +128,11 @@ export default async function handler(req, res) {
         precio: parseFloat(total) || 79900,
         sku: 'SKU-DEFECTO',
         dropi_id: '12345',
-        proveedor: 'Dropi' // Proveedor por defecto
+        proveedor: 'Dropi'
       }];
     }
 
-    // Determinar a qué proveedor logístico se debe despachar (se lee del primer producto)
-    const proveedorLogistico = finalProducts[0].proveedor || 'Dropi';
+    const proveedorLogistico = 'Dropi';
 
     // 2. Insertar pedido en la Base de Datos de Supabase
     const { data: dbData, error: dbError } = await supabase
@@ -303,16 +176,7 @@ export default async function handler(req, res) {
       productos: finalProducts
     };
 
-    let integrationResponse = { success: false, error: 'Proveedor no soportado' };
-
-    // Enrutar al canal logístico adecuado
-    if (proveedorLogistico === 'Dropi') {
-      integrationResponse = await sendOrderToDropi(orderPayload);
-    } else if (proveedorLogistico === 'Effi') {
-      integrationResponse = await sendOrderToEffi(orderPayload);
-    } else if (proveedorLogistico === 'Hoko') {
-      integrationResponse = await sendOrderToHoko(orderPayload);
-    }
+    const integrationResponse = await sendOrderToDropi(orderPayload);
 
     // Procesar la respuesta del proveedor
     if (integrationResponse.success) {

@@ -93,7 +93,12 @@ export default async function handler(req, res) {
         ])
         .select();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') {
+          return res.status(409).json({ success: false, error: 'Ya existe un producto con ese SKU o slug' });
+        }
+        throw error;
+      }
 
       return res.status(201).json({
         success: true,
@@ -129,7 +134,12 @@ export default async function handler(req, res) {
         .eq('id', id)
         .select();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') {
+          return res.status(409).json({ success: false, error: 'Ya existe un producto con ese SKU o slug' });
+        }
+        throw error;
+      }
 
       return res.status(200).json({
         success: true,
