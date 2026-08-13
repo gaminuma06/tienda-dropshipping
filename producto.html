@@ -22,6 +22,17 @@
       --danger: #e8511f;
     }
 
+    /* .btn-submit-checkout en style.css usa un degradado con un verde fijo al final
+       y una sombra verde fija — sobreescribimos ambos aquí para que sea 100% coral */
+    .btn-submit-checkout {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%) !important;
+      box-shadow: 0 5px 15px rgba(255, 107, 74, 0.35) !important;
+    }
+
+    .btn-submit-checkout:hover {
+      box-shadow: 0 8px 20px rgba(255, 107, 74, 0.45) !important;
+    }
+
     /* Estilos Premium para la Landing de Producto */
     /* Ocultar elementos superiores innecesarios para optimizar conversión */
     .top-bar {
