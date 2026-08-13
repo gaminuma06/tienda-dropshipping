@@ -243,14 +243,17 @@
     }
 
     @media (max-width: 900px) {
+      /* En el celular lo que se navega es imagen + descripción; el formulario
+         de compra completo (precio, opciones, datos de envío) vive escondido
+         como un panel que se abre al tocar el botón flotante "Comprar ahora" */
       .product-layout {
         grid-template-columns: 1fr;
         grid-template-areas:
           "gallery"
-          "info"
-          "form"
-          "description";
+          "description"
+          "faq";
         gap: 1.5rem;
+        padding-bottom: 90px; /* espacio para que la barra flotante no tape el final */
       }
 
       .left-column-wrapper,
@@ -259,9 +262,44 @@
       }
 
       .gallery-container { grid-area: gallery; }
-      .info-container { grid-area: info; }
-      .checkout-container { grid-area: form; }
       .description-container { grid-area: description; }
+      .faq-container { grid-area: faq; }
+
+      /* No se le asigna grid-area a propósito: al abrirse pasa a position:fixed
+         y sale del flujo del grid; mientras está cerrado, display:none */
+      .checkout-container {
+        display: none !important;
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 300 !important;
+        background: white !important;
+        overflow-y: auto !important;
+        padding-top: 10px;
+      }
+
+      .checkout-container.mobile-drawer-open {
+        display: block !important;
+      }
+
+      .mobile-drawer-close {
+        display: block;
+        width: 36px;
+        height: 36px;
+        margin: 6px 6px 0 auto;
+        border: none;
+        background: #f1f5f9;
+        border-radius: 50%;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        cursor: pointer;
+      }
+    }
+
+    @media (min-width: 901px) {
+      .mobile-drawer-close {
+        display: none;
+      }
     }
 
     .main-img-box {
@@ -807,7 +845,8 @@
         <!-- COLUMNA DERECHA (Formulario de Compra Unificado Sticky) -->
         <div class="right-column-wrapper">
           <div class="checkout-container" id="checkout-form-section">
-            
+            <button type="button" class="mobile-drawer-close" onclick="cerrarPanelCompra()" aria-label="Cerrar">✕</button>
+
             <!-- Título, Precio y Opciones del Producto (Integrado) -->
             <div class="checkout-product-info" style="padding: 10px 16px; border-bottom: 1.5px solid var(--border-color); background: #f8fafc;">
               <span class="category-tag" style="font-size: 0.75rem; font-weight: 800; color: var(--secondary); letter-spacing: 0.5px; display: block; margin-bottom: 2px;">PRODUCTO EXCLUSIVO</span>

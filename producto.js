@@ -293,27 +293,26 @@ function actualizarResumenPrecios() {
   }
 }
 
-// Muestra la barra flotante de compra en móvil apenas el formulario de compra
-// (que en escritorio queda fijo con position:sticky) sale de la pantalla.
+// En móvil, el formulario de compra ya no vive en el flujo de la página
+// (solo imagen + descripción se navegan ahí) — la barra flotante está
+// siempre visible y es la única forma de abrir el panel de compra.
 function configurarBarraFlotanteMovil() {
-  if (!mobileBuyBar || typeof IntersectionObserver === 'undefined') return;
-
-  const checkoutSection = document.getElementById('checkout-form-section');
-  if (!checkoutSection) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      mobileBuyBar.classList.toggle('visible', !entry.isIntersecting);
-    });
-  }, { threshold: 0 });
-
-  observer.observe(checkoutSection);
+  if (!mobileBuyBar) return;
+  mobileBuyBar.classList.add('visible');
 }
 
-// Botón de la barra flotante: regresa al formulario de compra y enfoca el primer campo
+// Botón de la barra flotante: en móvil abre el panel de compra como overlay;
+// en escritorio (donde el formulario ya está siempre visible) solo enfoca el campo
 window.irAComprar = function () {
   const checkoutSection = document.getElementById('checkout-form-section');
   if (!checkoutSection) return;
+
+  if (window.innerWidth <= 900) {
+    checkoutSection.classList.add('mobile-drawer-open');
+    document.body.style.overflow = 'hidden';
+    if (mobileBuyBar) mobileBuyBar.classList.remove('visible');
+    return;
+  }
 
   checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -321,6 +320,14 @@ window.irAComprar = function () {
     const nombreInput = document.getElementById('nombre');
     if (nombreInput) nombreInput.focus();
   }, 400);
+}
+
+// Cierra el panel de compra en móvil y vuelve a mostrar la barra flotante
+window.cerrarPanelCompra = function () {
+  const checkoutSection = document.getElementById('checkout-form-section');
+  if (checkoutSection) checkoutSection.classList.remove('mobile-drawer-open');
+  document.body.style.overflow = '';
+  if (mobileBuyBar) mobileBuyBar.classList.add('visible');
 }
 
 // Inicializar Selectores de Ubicación
