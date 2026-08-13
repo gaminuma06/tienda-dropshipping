@@ -162,10 +162,15 @@ function renderizarProducto() {
     `).join('');
   }
 
-  // Poblar Opciones / Variaciones (Tallas o Colores)
+  // Poblar Opciones / Variaciones (Talla, Color, Tamaño, etc. según tipo_opcion)
   const opciones = productoActual.opciones || [];
   if (opciones.length > 0) {
     variationsContainer.style.display = 'block';
+    const tipoOpcion = productoActual.tipo_opcion || 'Opción';
+    const variationsTitle = document.getElementById('variations-title');
+    if (variationsTitle) {
+      variationsTitle.innerText = `SELECCIONA ${tipoOpcion.toUpperCase()}:`;
+    }
     optionsButtonsGrid.innerHTML = opciones.map((op, idx) => `
       <button type="button" class="option-btn" onclick="seleccionarOpcion(this, '${op}')">${op}</button>
     `).join('');
@@ -337,7 +342,8 @@ function configurarEnvioFormulario() {
     // Validar que se haya seleccionado variación si existen opciones
     const opciones = productoActual.opciones || [];
     if (opciones.length > 0 && !opcionSeleccionada) {
-      alert('Por favor selecciona una talla o color antes de confirmar.');
+      const tipoOpcion = productoActual.tipo_opcion || 'una opción';
+      alert(`Por favor selecciona ${tipoOpcion.toLowerCase() === 'una opción' ? tipoOpcion : 'un(a) ' + tipoOpcion.toLowerCase()} antes de confirmar.`);
       return;
     }
 

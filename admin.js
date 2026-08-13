@@ -23,6 +23,7 @@ const prodDropiId = document.getElementById('prod-dropi-id');
 const prodDescripcion = document.getElementById('prod-descripcion');
 const prodImagenes = document.getElementById('prod-imagenes');
 const prodOpciones = document.getElementById('prod-opciones');
+const prodTipoOpcion = document.getElementById('prod-tipo-opcion');
 const prodActivo = document.getElementById('prod-activo');
 const prodBeneficios = document.getElementById('prod-beneficios');
 const prodTestimonios = document.getElementById('prod-testimonios');
@@ -501,6 +502,7 @@ window.editarProducto = function(product) {
   prodDescripcion.value = product.descripcion || '';
   prodImagenes.value = product.imagenes.join('\n');
   prodOpciones.value = product.opciones ? product.opciones.join(', ') : '';
+  prodTipoOpcion.value = product.tipo_opcion || 'Opción';
   prodActivo.checked = product.activo;
 
   prodBeneficios.value = product.beneficios ? JSON.stringify(product.beneficios, null, 2) : '';
@@ -551,6 +553,7 @@ productoForm.addEventListener('submit', async (e) => {
     descripcion: prodDescripcion.value,
     imagenes: imagenesArray,
     opciones: opcionesArray,
+    tipo_opcion: prodTipoOpcion.value,
     activo: prodActivo.checked,
     beneficios: beneficiosJson,
     testimonios: testimoniosJson
@@ -763,6 +766,7 @@ window.importarSeleccionadosDropi = async function() {
       proveedor: 'Dropi',
       imagenes: producto.imagenes && producto.imagenes.length > 0 ? producto.imagenes : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600'],
       opciones: [],
+      tipo_opcion: 'Opción',
       slug: `${slugBase}-${producto.dropi_id}`,
       beneficios: [],
       testimonios: [],
