@@ -49,12 +49,6 @@ const landingDiscount = document.getElementById('landing-discount');
 const variationsContainer = document.getElementById('variations-container');
 const optionsButtonsGrid = document.getElementById('options-buttons-grid');
 
-const benefitsSectionContainer = document.getElementById('benefits-section-container');
-const benefitsCardsGrid = document.getElementById('benefits-cards-grid');
-
-const reviewsSectionContainer = document.getElementById('reviews-section-container');
-const reviewsCardsGrid = document.getElementById('reviews-cards-grid');
-
 const departamentoSelect = document.getElementById('departamento');
 const ciudadSelect = document.getElementById('ciudad');
 const checkoutForm = document.getElementById('checkout-form');
@@ -195,32 +189,6 @@ function renderizarProducto() {
     }
     optionsButtonsGrid.innerHTML = opciones.map((op, idx) => `
       <button type="button" class="option-btn" onclick="seleccionarOpcion(this, '${op}')">${op}</button>
-    `).join('');
-  }
-
-  // Poblar Beneficios
-  const beneficios = productoActual.beneficios || [];
-  if (beneficios.length > 0) {
-    benefitsSectionContainer.style.display = 'block';
-    benefitsCardsGrid.innerHTML = beneficios.map(b => `
-      <div class="benefit-card">
-        <div class="benefit-icon">${b.icon || '☁️'}</div>
-        <h3>${b.title}</h3>
-        <p>${b.text}</p>
-      </div>
-    `).join('');
-  }
-
-  // Poblar Testimonios
-  const testimonios = productoActual.testimonios || [];
-  if (testimonios.length > 0) {
-    reviewsSectionContainer.style.display = 'block';
-    reviewsCardsGrid.innerHTML = testimonios.map(t => `
-      <div class="review-card">
-        <div class="review-stars-inline">${'⭐'.repeat(t.stars || 5)}</div>
-        <p>"${t.text}"</p>
-        <strong>- ${t.name}</strong>
-      </div>
     `).join('');
   }
 

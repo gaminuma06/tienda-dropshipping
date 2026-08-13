@@ -36,7 +36,7 @@
     /* Estilos Premium para la Landing de Producto */
     /* Ocultar elementos superiores innecesarios para optimizar conversión */
     .top-bar {
-      display: none !important;
+      background: linear-gradient(90deg, #e8511f, #ff6b4a) !important;
     }
     header {
       display: none !important;
@@ -92,41 +92,73 @@
       }
     }
 
-    /* Escritorio: TODO cabe en la ventana, cero scroll de página.
-       Cada columna hace su propio scroll interno si su contenido no cabe. */
+    /* Escritorio: TODO cabe en la ventana, cero scroll — ni de página ni de
+       columna. body es una columna flex: la barra de urgencia mide lo que
+       necesite y <main> ocupa exactamente lo que sobra. */
     @media (min-width: 901px) {
       html, body {
         height: 100vh;
         overflow: hidden;
       }
 
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .top-bar {
+        flex-shrink: 0;
+      }
+
       main {
-        height: 100vh;
+        flex: 1 1 auto;
+        min-height: 0;
         display: flex;
         align-items: center;
+        padding-top: 0 !important;
       }
 
       .product-layout {
-        height: calc(100vh - 30px);
+        height: 100%;
+        max-height: 100%;
         align-items: stretch;
       }
 
-      .left-column-wrapper,
+      .left-column-wrapper {
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem !important;
+      }
+
       .right-column-wrapper {
         height: 100%;
         overflow-y: auto;
         scrollbar-width: thin;
       }
 
-      .left-column-wrapper::-webkit-scrollbar,
       .right-column-wrapper::-webkit-scrollbar {
         width: 4px;
       }
 
-      .left-column-wrapper::-webkit-scrollbar-thumb,
       .right-column-wrapper::-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 4px;
+      }
+
+      /* La galería se lleva el espacio flexible; el resto es de tamaño fijo */
+      .gallery-container {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .trust-badges-grid,
+      .description-container,
+      .faq-container {
+        flex-shrink: 0;
       }
 
       /* Sin miniaturas: el carrusel automático ya rota las fotos solo */
@@ -135,11 +167,26 @@
       }
 
       .main-img-box {
-        max-height: 560px !important;
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none !important;
       }
 
       .main-img-box img {
-        height: 560px !important;
+        height: 100% !important;
+      }
+
+      /* Descripción recortada a pocas líneas — el detalle completo vive en el FAQ */
+      #landing-description {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .faq-list {
+        max-height: 180px;
+        overflow-y: auto;
       }
 
       /* El banner de CTA final y el footer solo tenían sentido cuando la página
@@ -158,9 +205,7 @@
           "gallery"
           "info"
           "form"
-          "description"
-          "benefits"
-          "reviews";
+          "description";
         gap: 1.5rem;
       }
 
@@ -173,8 +218,6 @@
       .info-container { grid-area: info; }
       .checkout-container { grid-area: form; }
       .description-container { grid-area: description; }
-      .benefits-container { grid-area: benefits; }
-      .reviews-container { grid-area: reviews; }
     }
 
     .main-img-box {
@@ -691,16 +734,6 @@
             </div>
           </div>
 
-          <!-- 5. BENEFICIOS -->
-          <div class="benefits-container" id="benefits-section-container" style="display: none;">
-            <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
-              Características Destacadas
-            </h2>
-            <div class="benefits-grid" id="benefits-cards-grid">
-              <!-- Tarjetas dinámicas de beneficios -->
-            </div>
-          </div>
-
           <!-- 5.5 PREGUNTAS FRECUENTES (maneja objeciones antes del CTA final) -->
           <div class="faq-container">
             <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
@@ -723,16 +756,6 @@
                 <summary>¿Hacen envíos a todo el país?</summary>
                 <p>Sí, hacemos envíos con costo gratuito a toda Colombia.</p>
               </details>
-            </div>
-          </div>
-
-          <!-- 6. TESTIMONIOS -->
-          <div class="reviews-container" id="reviews-section-container" style="display: none;">
-            <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
-              Opiniones de Clientes
-            </h2>
-            <div class="reviews-container" id="reviews-cards-grid" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-              <!-- Opiniones dinámicas -->
             </div>
           </div>
         </div>
