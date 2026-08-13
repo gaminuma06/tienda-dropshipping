@@ -115,7 +115,7 @@
         min-height: 0;
         display: flex;
         align-items: stretch;
-        padding-top: 0 !important;
+        padding-top: 18px !important;
       }
 
       .product-layout {
@@ -169,11 +169,16 @@
       .main-img-box {
         flex: 1 1 auto;
         min-height: 0;
-        max-height: none !important;
+        max-height: 100% !important;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
+        margin: 0 auto;
       }
 
       .main-img-box img {
         height: 100% !important;
+        width: 100% !important;
+        object-fit: cover;
       }
 
       /* Descripción recortada a pocas líneas — el detalle completo vive en el FAQ */
@@ -186,16 +191,32 @@
         line-height: 1.5 !important;
       }
 
+      /* Sin títulos de sección — solo el contenido, más aire entre bloques */
       .description-container h2,
       .faq-container h2 {
-        font-size: 1.05rem !important;
-        margin-bottom: 0.5rem !important;
-        padding-bottom: 0.35rem !important;
+        display: none !important;
+      }
+
+      .left-column-wrapper {
+        gap: 1.1rem !important;
       }
 
       .trust-badges-grid {
-        padding: 8px !important;
+        padding: 6px 8px !important;
         margin: 0 !important;
+      }
+
+      .trust-badges-grid span {
+        font-size: 1.05rem !important;
+      }
+
+      .trust-badges-grid > div > div:first-of-type {
+        font-size: 0.68rem !important;
+        margin-top: 0 !important;
+      }
+
+      .trust-badges-grid > div > div:last-of-type {
+        font-size: 0.58rem !important;
       }
 
       .faq-list {
