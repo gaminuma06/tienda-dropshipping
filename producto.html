@@ -353,6 +353,75 @@
       }
     }
 
+    /* Tarjetas de oferta por cantidad (reemplazan el <select> escondido) */
+    .offer-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .offer-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      background: #f8fafc;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .offer-card input[type="radio"] {
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .offer-card:has(input:checked) {
+      border-color: var(--primary);
+      background: rgba(16, 185, 129, 0.06);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    .offer-card-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      flex: 1;
+    }
+
+    .offer-card-save {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .offer-card-price {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+    }
+
+    .offer-card-badge {
+      position: absolute;
+      top: -9px;
+      left: 34px;
+      background: var(--danger);
+      color: white;
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
     /* Preguntas Frecuentes (maneja objeciones) */
     .faq-list {
       display: flex;
@@ -645,13 +714,11 @@
                 </select>
               </div>
 
-              <!-- Fila 4: Selector de Oferta en Dropdown (Compacto) -->
+              <!-- Fila 4: Ofertas por cantidad como tarjetas visibles (el ahorro se ve sin hacer clic) -->
               <div class="offers-container" style="margin-bottom: 12px;">
-                <select id="oferta-select" name="oferta" style="width: 100%; padding: 10px; border-radius: 6px; border: 1.5px solid var(--border-color); font-weight: 700; font-size: 0.9rem; background: #f8fafc; color: var(--text-dark);">
-                  <option value="1" data-qty="1">Cargando ofertas...</option>
-                  <option value="2" data-qty="2">Cargando ofertas...</option>
-                  <option value="3" data-qty="3">Cargando ofertas...</option>
-                </select>
+                <div class="offer-cards-grid" id="offer-cards-grid">
+                  <!-- Se inyecta dinámicamente -->
+                </div>
               </div>
 
               <!-- Botón de Envío Único con Total -->

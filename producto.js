@@ -56,7 +56,7 @@ const successScreen = document.getElementById('success-screen');
 const submitBtn = document.getElementById('submit-btn');
 
 // Selector de ofertas e información de totales
-const ofertaSelect = document.getElementById('oferta-select');
+const ofertaCardsGrid = document.getElementById('offer-cards-grid');
 const btnTotalVal = document.getElementById('btn-total-val');
 
 // Barra flotante de compra (móvil)
@@ -134,18 +134,32 @@ function renderizarProducto() {
     precio: price
   };
 
-  // Poblar precios de las opciones de oferta en el select dropdown
-  const opt1 = ofertaSelect.options[0];
-  const opt2 = ofertaSelect.options[1];
-  const opt3 = ofertaSelect.options[2];
-
-  if (opt1) opt1.textContent = `Llevar 1 Unidad — $${price.toLocaleString('es-CO')} COP (Envío Gratis)`;
-  
+  // Poblar tarjetas de oferta por cantidad (ahorro visible, sin esconderlo en un dropdown)
   const priceQty2 = (price * 2) - 20000; // Descuento de 20k
-  if (opt2) opt2.textContent = `Llevar 2 Unidades (Ahorras 20k) — $${priceQty2.toLocaleString('es-CO')} COP`;
-
   const priceQty3 = price * 2; // Paga 2 y lleva 3
-  if (opt3) opt3.textContent = `Llevar 3 Unidades (Paga 2 Lleva 3) — $${priceQty3.toLocaleString('es-CO')} COP`;
+
+  if (ofertaCardsGrid) {
+    ofertaCardsGrid.innerHTML = `
+      <label class="offer-card">
+        <input type="radio" name="oferta" value="1" checked>
+        <span class="offer-card-title">Llevar 1 Unidad</span>
+        <span class="offer-card-price">$${price.toLocaleString('es-CO')}</span>
+      </label>
+      <label class="offer-card">
+        <span class="offer-card-badge">MÁS ELEGIDA</span>
+        <input type="radio" name="oferta" value="2">
+        <span class="offer-card-title">Llevar 2 Unidades</span>
+        <span class="offer-card-save">Ahorras $20.000</span>
+        <span class="offer-card-price">$${priceQty2.toLocaleString('es-CO')}</span>
+      </label>
+      <label class="offer-card">
+        <input type="radio" name="oferta" value="3">
+        <span class="offer-card-title">Llevar 3 Unidades</span>
+        <span class="offer-card-save">Paga 2, lleva 3</span>
+        <span class="offer-card-price">$${priceQty3.toLocaleString('es-CO')}</span>
+      </label>
+    `;
+  }
 
   actualizarResumenPrecios();
 
@@ -243,7 +257,9 @@ function configurarManejadoresOfertas(p1, p2, p3) {
     3: p3
   };
 
-  ofertaSelect.addEventListener('change', (e) => {
+  ofertaCardsGrid.addEventListener('change', (e) => {
+    if (e.target.name !== 'oferta') return;
+
     const qty = parseInt(e.target.value);
     const price = preciosPorCantidad[qty] || p1;
 
