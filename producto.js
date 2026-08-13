@@ -27,6 +27,12 @@ let ofertaSeleccionada = {
   precio: 0
 };
 
+// Estado del carrusel de imágenes (avanza solo, sin que el cliente tenga que hacer nada)
+let carruselImagenes = [];
+let carruselIndice = 0;
+let carruselTimer = null;
+const CARRUSEL_INTERVALO_MS = 3500;
+
 // Referencias del DOM
 const loadingState = document.getElementById('loading-state');
 const errorState = document.getElementById('error-state');
@@ -163,17 +169,19 @@ function renderizarProducto() {
 
   actualizarResumenPrecios();
 
-  // Poblar Imágenes
+  // Poblar Imágenes como carrusel automático (pasan solas, sin que el cliente tenga que hacer nada)
   const imagenes = productoActual.imagenes || [];
   if (imagenes.length > 0) {
     landingMainImg.src = imagenes[0];
 
-    // Crear miniaturas
+    // Crear miniaturas (también sirven de indicador y de control manual)
     landingThumbsGrid.innerHTML = imagenes.map((img, idx) => `
-      <div class="thumb-item ${idx === 0 ? 'active' : ''}" onclick="cambiarImagenPrincipal(this, '${img}')">
+      <div class="thumb-item ${idx === 0 ? 'active' : ''}" onclick="cambiarImagenPrincipal(${idx})">
         <img src="${img}" alt="Miniatura ${idx + 1}">
       </div>
     `).join('');
+
+    iniciarCarrusel(imagenes);
   }
 
   // Poblar Opciones / Variaciones (Talla, Color, Tamaño, etc. según tipo_opcion)
@@ -226,19 +234,45 @@ function renderizarProducto() {
   configurarBarraFlotanteMovil();
 }
 
-// Cambiar la imagen grande
-window.cambiarImagenPrincipal = function (element, imgSrc) {
-  landingMainImg.style.opacity = '0';
+// Muestra la imagen de un índice dado y actualiza la miniatura activa
+function mostrarImagenCarrusel(idx) {
+  if (!carruselImagenes[idx]) return;
+  carruselIndice = idx;
 
+  landingMainImg.style.opacity = '0';
   setTimeout(() => {
-    landingMainImg.src = imgSrc;
+    landingMainImg.src = carruselImagenes[idx];
     landingMainImg.style.opacity = '1';
   }, 200);
 
-  document.querySelectorAll('.thumb-item').forEach(thumb => {
-    thumb.classList.remove('active');
+  document.querySelectorAll('.thumb-item').forEach((thumb, i) => {
+    thumb.classList.toggle('active', i === idx);
   });
-  element.classList.add('active');
+}
+
+// Arranca el avance automático de imágenes (una tras otra, en loop)
+function iniciarCarrusel(imagenes) {
+  carruselImagenes = imagenes;
+  carruselIndice = 0;
+  if (carruselTimer) clearInterval(carruselTimer);
+  if (imagenes.length <= 1) return;
+
+  carruselTimer = setInterval(() => {
+    const siguiente = (carruselIndice + 1) % carruselImagenes.length;
+    mostrarImagenCarrusel(siguiente);
+  }, CARRUSEL_INTERVALO_MS);
+}
+
+// Clic manual en una miniatura: cambia la imagen y reinicia el conteo automático
+window.cambiarImagenPrincipal = function (idx) {
+  mostrarImagenCarrusel(idx);
+  if (carruselTimer) {
+    clearInterval(carruselTimer);
+    carruselTimer = setInterval(() => {
+      const siguiente = (carruselIndice + 1) % carruselImagenes.length;
+      mostrarImagenCarrusel(siguiente);
+    }, CARRUSEL_INTERVALO_MS);
+  }
 }
 
 // Seleccionar Talla/Color
