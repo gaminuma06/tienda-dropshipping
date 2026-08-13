@@ -353,6 +353,95 @@
       }
     }
 
+    /* Preguntas Frecuentes (maneja objeciones) */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .faq-item {
+      background: #f8fafc;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+    }
+
+    .faq-item summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary::before {
+      content: '+';
+      display: inline-block;
+      width: 1.2em;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .faq-item[open] summary::before {
+      content: '−';
+    }
+
+    .faq-item p {
+      margin: 0.6rem 0 0 1.2em;
+      color: #475569;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Banner de CTA final */
+    .final-cta-banner {
+      max-width: 1200px;
+      margin: 1.5rem auto 0 auto;
+      text-align: center;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      color: white;
+    }
+
+    .final-cta-banner h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .final-cta-banner p {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      margin-bottom: 1.2rem;
+    }
+
+    .final-cta-banner button {
+      background: white;
+      color: #059669;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    footer a {
+      color: var(--primary, #10b981);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
     .badge-discount-float {
       position: absolute;
       top: 1.5rem;
@@ -465,6 +554,31 @@
             </div>
           </div>
 
+          <!-- 5.5 PREGUNTAS FRECUENTES (maneja objeciones antes del CTA final) -->
+          <div class="faq-container">
+            <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
+              Preguntas Frecuentes
+            </h2>
+            <div class="faq-list">
+              <details class="faq-item">
+                <summary>¿Es seguro pagar contraentrega?</summary>
+                <p>Sí. No pagas nada por adelantado — solo cancelas cuando el mensajero llega a tu puerta y confirmas que el producto está correcto.</p>
+              </details>
+              <details class="faq-item">
+                <summary>¿Cuánto tarda en llegar mi pedido?</summary>
+                <p>Entre 2 y 5 días hábiles en ciudades principales, hasta 8 días en zonas más alejadas.</p>
+              </details>
+              <details class="faq-item">
+                <summary>¿Qué pasa si el producto llega dañado o incompleto?</summary>
+                <p>Tienes 5 días calendario desde la entrega para reportarlo con fotos o video, y gestionamos el cambio o la devolución sin costo adicional.</p>
+              </details>
+              <details class="faq-item">
+                <summary>¿Hacen envíos a todo el país?</summary>
+                <p>Sí, hacemos envíos con costo gratuito a toda Colombia.</p>
+              </details>
+            </div>
+          </div>
+
           <!-- 6. TESTIMONIOS -->
           <div class="reviews-container" id="reviews-section-container" style="display: none;">
             <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; color: #0f172a; text-align: left;">
@@ -572,12 +686,27 @@
         </div>
 
       </div>
+
+      <!-- 7. BANNER DE CTA FINAL (para quien llegó hasta el fondo sin comprar arriba) -->
+      <div class="final-cta-banner">
+        <h2>¿Listo para pedir el tuyo?</h2>
+        <p>🚚 Envío gratis a toda Colombia &nbsp;·&nbsp; 💵 Pagas al recibir</p>
+        <button type="button" onclick="irAComprar()">🟢 Comprar Ahora</button>
+      </div>
     </div>
   </main>
 
   <footer>
     <p>© 2026 ECOMMERCE EXPRESS. Todos los derechos reservados.</p>
-    <p>Desarrollado con fines de dropshipping local automatizado.</p>
+    <p>
+      📍 Colombia &nbsp;·&nbsp;
+      ✉️ <a href="mailto:ingarias9006@gmail.com">ingarias9006@gmail.com</a> &nbsp;·&nbsp;
+      📲 <a href="https://wa.me/57XXXXXXXXXX" target="_blank">WhatsApp</a>
+    </p>
+    <p>
+      <a href="/privacidad">Política de Privacidad</a> &nbsp;·&nbsp;
+      <a href="/terminos">Términos y Condiciones</a>
+    </p>
   </footer>
 
   <!-- Barra flotante de compra (solo móvil, siempre visible cuando el formulario sale de pantalla) -->

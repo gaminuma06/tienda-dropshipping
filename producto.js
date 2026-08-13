@@ -440,17 +440,25 @@ function configurarEnvioFormulario() {
   });
 }
 
-// Inicializar Pixel de Meta
-function inicializarPixel() {
-  // Configurar pixel dinámicamente si existe algún identificador configurado
-  // O el pre-inicializado en el HTML
-  if (typeof fbq === 'function') {
-    fbq('track', 'PageView');
-    fbq('track', 'ViewContent', {
-      content_name: productoActual.nombre,
-      value: parseFloat(productoActual.precio),
-      currency: 'COP'
-    });
+// Inicializar Pixel de Meta (fbq('init', ...) real, no solo el snippet base)
+async function inicializarPixel() {
+  if (typeof fbq !== 'function') return;
+
+  try {
+    const response = await fetch('/api/config');
+    const data = await response.json();
+
+    if (data.success && data.metaPixelId) {
+      fbq('init', data.metaPixelId);
+      fbq('track', 'PageView');
+      fbq('track', 'ViewContent', {
+        content_name: productoActual.nombre,
+        value: parseFloat(productoActual.precio),
+        currency: 'COP'
+      });
+    }
+  } catch (err) {
+    console.error('Error inicializando Meta Pixel:', err);
   }
 }
 
