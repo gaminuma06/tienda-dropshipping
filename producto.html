@@ -92,6 +92,20 @@
       }
     }
 
+    /* Sin títulos de sección en ningún tamaño de pantalla — solo el contenido */
+    .description-container h2,
+    .faq-container h2 {
+      display: none !important;
+    }
+
+    /* El banner naranja de CTA final es redundante en cualquier tamaño ahora:
+       en escritorio el checkout siempre está visible, en móvil la barra
+       flotante siempre está visible. El footer real sí se deja en móvil,
+       es la única forma de llegar a Privacidad/Términos ahí. */
+    .final-cta-banner {
+      display: none !important;
+    }
+
     /* Escritorio: TODO cabe en la ventana, cero scroll — ni de página ni de
        columna. body es una columna flex: la barra de urgencia mide lo que
        necesite y <main> ocupa exactamente lo que sobra. */
@@ -191,12 +205,6 @@
         line-height: 1.5 !important;
       }
 
-      /* Sin títulos de sección — solo el contenido, más aire entre bloques */
-      .description-container h2,
-      .faq-container h2 {
-        display: none !important;
-      }
-
       .left-column-wrapper {
         gap: 1.1rem !important;
       }
@@ -233,10 +241,10 @@
         font-size: 0.85rem !important;
       }
 
-      /* El banner de CTA final y el footer solo tenían sentido cuando la página
-         se podía scrollear hasta el fondo — con el checkout siempre visible,
-         ya no hacen falta y sacarlos evita que aparezca scroll */
-      .final-cta-banner,
+      /* El footer solo tenía sentido cuando la página se podía scrollear hasta
+         el fondo — con el checkout siempre visible, ya no hace falta y
+         sacarlo evita que aparezca scroll (el banner de CTA ya se oculta
+         globalmente arriba) */
       footer {
         display: none !important;
       }
@@ -250,6 +258,7 @@
         grid-template-columns: 1fr;
         grid-template-areas:
           "gallery"
+          "badges"
           "description"
           "faq";
         gap: 1.5rem;
@@ -262,6 +271,7 @@
       }
 
       .gallery-container { grid-area: gallery; }
+      .trust-badges-grid { grid-area: badges; }
       .description-container { grid-area: description; }
       .faq-container { grid-area: faq; }
 
