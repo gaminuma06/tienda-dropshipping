@@ -46,8 +46,17 @@ const landingMainImg = document.getElementById('landing-main-img');
 const landingThumbsGrid = document.getElementById('landing-thumbs-grid');
 const landingDiscount = document.getElementById('landing-discount');
 
+const heroTitle = document.getElementById('hero-title');
+const heroTagline = document.getElementById('hero-tagline');
+
 const variationsContainer = document.getElementById('variations-container');
 const optionsButtonsGrid = document.getElementById('options-buttons-grid');
+
+const benefitsSectionContainer = document.getElementById('benefits-section-container');
+const benefitsCardsGrid = document.getElementById('benefits-cards-grid');
+
+const reviewsSectionContainer = document.getElementById('reviews-section-container');
+const reviewsCardsGrid = document.getElementById('reviews-cards-grid');
 
 const departamentoSelect = document.getElementById('departamento');
 const ciudadSelect = document.getElementById('ciudad');
@@ -110,12 +119,25 @@ function showError() {
   productContent.style.display = 'none';
 }
 
+// Quita etiquetas HTML de la descripción para usarla como texto plano (tagline del hero)
+function extraerTextoPlano(html, maxLen) {
+  const temp = document.createElement('div');
+  temp.innerHTML = html || '';
+  const texto = (temp.textContent || '').replace(/\s+/g, ' ').trim();
+  if (texto.length <= maxLen) return texto;
+  return texto.slice(0, maxLen).replace(/\s+\S*$/, '') + '…';
+}
+
 function renderizarProducto() {
   document.title = `${productoActual.nombre} - Tienda Contra Entrega`;
 
   // Poblar información textual
   landingTitle.innerText = productoActual.nombre;
   landingDescription.innerHTML = productoActual.descripcion || 'Sin descripción disponible.';
+
+  // Titular magnético + UVP (propuesta única de valor) del hero
+  if (heroTitle) heroTitle.innerText = productoActual.nombre;
+  if (heroTagline) heroTagline.innerText = extraerTextoPlano(productoActual.descripcion, 150);
 
   // Calcular precios y ofertas
   const price = parseFloat(productoActual.precio);
@@ -189,6 +211,32 @@ function renderizarProducto() {
     }
     optionsButtonsGrid.innerHTML = opciones.map((op, idx) => `
       <button type="button" class="option-btn" onclick="seleccionarOpcion(this, '${op}')">${op}</button>
+    `).join('');
+  }
+
+  // Poblar Beneficios (resuelven un dolor, no solo listan características)
+  const beneficios = productoActual.beneficios || [];
+  if (beneficios.length > 0 && benefitsSectionContainer) {
+    benefitsSectionContainer.style.display = 'block';
+    benefitsCardsGrid.innerHTML = beneficios.map(b => `
+      <div class="benefit-card">
+        <div class="benefit-icon">${b.icon || '☁️'}</div>
+        <h3>${b.title}</h3>
+        <p>${b.text}</p>
+      </div>
+    `).join('');
+  }
+
+  // Poblar Prueba Social (testimonios reales)
+  const testimonios = productoActual.testimonios || [];
+  if (testimonios.length > 0 && reviewsSectionContainer) {
+    reviewsSectionContainer.style.display = 'block';
+    reviewsCardsGrid.innerHTML = testimonios.map(t => `
+      <div class="review-card">
+        <div class="review-stars-inline">${'⭐'.repeat(t.stars || 5)}</div>
+        <p>"${t.text}"</p>
+        <strong>- ${t.name}</strong>
+      </div>
     `).join('');
   }
 
@@ -458,14 +506,14 @@ function configurarEnvioFormulario() {
       } else {
         alert(`Error al guardar el pedido: ${resData.error || 'Error desconocido'}`);
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '🟢 COMPRAR CONTRAENTREGA — TOTAL: <span id="btn-total-val"></span>';
+        submitBtn.innerHTML = '🟢 SÍ, LO QUIERO — TOTAL: <span id="btn-total-val"></span>';
         actualizarResumenPrecios();
       }
     } catch (err) {
       console.error('Error al enviar petición:', err);
       alert('Hubo un error de conexión al procesar tu pedido. Intenta nuevamente.');
       submitBtn.disabled = false;
-      submitBtn.innerHTML = '🟢 COMPRAR CONTRAENTREGA — TOTAL: <span id="btn-total-val"></span>';
+      submitBtn.innerHTML = '🟢 SÍ, LO QUIERO — TOTAL: <span id="btn-total-val"></span>';
       actualizarResumenPrecios();
     }
   });
